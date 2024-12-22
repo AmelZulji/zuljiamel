@@ -1,0 +1,26 @@
+project:
+  type: website
+
+website:
+  title: "Amel Zulji"
+  navbar:
+    left:
+      - href: index.qmd
+        text: About me
+      - href: posts.qmd
+        text: Blog
+    right:
+      - icon: github
+        href: https://github.com/AmelZulji
+      # - icon: twitter
+      #   href: https://twitter.com
+
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+
+editor: visual
+

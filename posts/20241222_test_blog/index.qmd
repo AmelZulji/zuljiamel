@@ -1,0 +1,27 @@
+---
+title: "Hello world"
+date: 2020.12.20
+---
+
+Get ready to be greated by tidyverse
+
+```{r}
+suppressPackageStartupMessages({
+  library(tidyverse, warn.conflicts = FALSE)
+})
+
+```
+
+Tidyverse is saying hello to the world.
+
+```{r}
+ggplot() + 
+  annotate(
+  "text",
+  x = 4,
+  y = 25,
+  label = "Hello world",
+  size = 25
+)
+
+```

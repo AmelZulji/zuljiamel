@@ -1,0 +1,17 @@
+{
+  "hash": "c53dab93c7bd0f42e782cac25656c27b",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"Hello world\"\ndate: 2020.12.20\n---\n\n\n\n\n\nGet ready to be greated by tidyverse\n\n\n\n\n\n::: {.cell}\n\n```{.r .cell-code}\nsuppressPackageStartupMessages({\n  library(tidyverse, warn.conflicts = FALSE)\n})\n```\n:::\n\n\n\n\n\nTidyverse is saying hello to the world.\n\n\n\n\n\n::: {.cell}\n\n```{.r .cell-code}\nggplot() + \n  annotate(\n  \"text\",\n  x = 4,\n  y = 25,\n  label = \"Hello world\",\n  size = 25\n)\n```\n\n::: {.cell-output-display}\n![](index_files/figure-html/unnamed-chunk-2-1.png){width=672}\n:::\n:::\n",
+    "supporting": [
+      "index_files"
+    ],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}
