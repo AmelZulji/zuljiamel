@@ -1,0 +1,23 @@
+[
+  {
+    "objectID": "posts.html",
+    "href": "posts.html",
+    "title": "Blog",
+    "section": "",
+    "text": "Hello world\n\n\n\n\n\n\n\n\n\n\n\nDec 20, 2020\n\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Amel Zulji",
+    "section": "",
+    "text": "Text"
+  },
+  {
+    "objectID": "posts/20241222_test_blog/index.html",
+    "href": "posts/20241222_test_blog/index.html",
+    "title": "Hello world",
+    "section": "",
+    "text": "Get ready to be greated by tidyverse\n\nsuppressPackageStartupMessages({\n  library(tidyverse, warn.conflicts = FALSE)\n})\n\nTidyverse is saying hello to the world.\n\nggplot() + \n  annotate(\n  \"text\",\n  x = 4,\n  y = 25,\n  label = \"Hello world\",\n  size = 25\n)"
+  }
+]
