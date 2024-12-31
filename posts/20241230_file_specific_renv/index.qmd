@@ -1,0 +1,64 @@
+---
+title: "File-Specific Environments in R with `renv::use()`"
+date: 2020.12.31
+---
+
+# Introduction
+
+The `use()` function from `{renv}` package is a powerful way to create an isolated library for use with a single file (i.e. `.R`, `.qmd`, `.rmd`, ...). Since this library is temporary and independent from the project-specific library it is very handy in following scenarios:
+
+-   **Testing new package versions** – a new package version can be installed tested without interfiring with project-specific library.
+
+-   **Ensure blog reproducibility** – blogs usually require diverse set of packages. Maintaining single project library for all blogs will lead to library clutter and will likely introduce dependency conflicts over time, rendering older blogs irreproducible.
+
+# Create a temporary library for a file
+
+To create a temporary library for a file, include `renv::use()` at the beginning of a file:
+
+```{r}
+renv::use("ggplot2@3.5.0")
+```
+
+As reported by `{renv}`, the package was installed in temporary directory:
+
+```         
+"/tmp/Rtmpn79OzQ/renv-use-libpath-275020564a66"
+```
+
+::: callout-note
+packages can also be specified with `renv.lock` as follows `renv::use(lockfile = "path_to_renv.lock_file")`
+:::
+
+# Isolation type
+
+By default, `use()` will completely isolate the library, meaning that only the temporary library is available at the library path:
+
+```{r}
+.libPaths()
+```
+
+::: callout-note
+The second path is not project-specific library but rather `{renv}`'s cache
+:::
+
+This behavior is particularly useful for blogs, where each blog benefits from an explicit, independent library. However, the project-specific library can also be included alongside the temporary library:
+
+```{r}
+#| echo: false
+#| output: false
+
+renv::deactivate()
+# renv::activate()
+```
+
+```{r}
+renv::use("ggplot2@3.5.0", isolate = FALSE)
+```
+
+Now, both the temporary library and the project-specific library will be available at library path:
+
+```{r}
+.libPaths()
+```
+
+This option is ideal for testing a new package version within a project that already has many dependencies, ensuring compatibility without modifying the project-specific library.
