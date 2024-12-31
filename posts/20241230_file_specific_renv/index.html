@@ -6,9 +6,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2020-12-20">
 
-<title>Hello world – Amel Zulji</title>
+<title>File-Specific Environments in R with renv::use() – Amel Zulji</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -149,7 +148,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Hello world</h1>
+      <h1 class="title">File-Specific Environments in R with <code>renv::use()</code></h1>
                       </div>
   </div>
     
@@ -157,12 +156,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <div class="quarto-title-meta">
 
       
-      <div>
-      <div class="quarto-title-meta-heading">Published</div>
-      <div class="quarto-title-meta-contents">
-        <p class="date">December 20, 2020</p>
-      </div>
-    </div>
     
       
     </div>
@@ -171,8 +164,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#create-a-temporary-library-for-a-file" id="toc-create-a-temporary-library-for-a-file" class="nav-link" data-scroll-target="#create-a-temporary-library-for-a-file">Create a temporary library for a file</a></li>
+  <li><a href="#isolation-type" id="toc-isolation-type" class="nav-link" data-scroll-target="#isolation-type">Isolation type</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content quarto-banner-title-block" id="quarto-document-content">
@@ -181,32 +182,138 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
-<p>Get ready to be greated by tidyverse</p>
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<p>The <code>use()</code> function from <code>{renv}</code> package is a powerful way to create an isolated library for use with a single file (i.e.&nbsp;<code>.R</code>, <code>.qmd</code>, <code>.rmd</code>, …). Since this library is temporary and independent from the project-specific library it is very handy in following scenarios:</p>
+<ul>
+<li><p><strong>Testing new package versions</strong> – a new package version can be installed tested without interfiring with project-specific library.</p></li>
+<li><p><strong>Ensure blog reproducibility</strong> – blogs usually require diverse set of packages. Maintaining single project library for all blogs will lead to library clutter and will likely introduce dependency conflicts over time, rendering older blogs irreproducible.</p></li>
+</ul>
+</section>
+<section id="create-a-temporary-library-for-a-file" class="level1">
+<h1>Create a temporary library for a file</h1>
+<p>To create a temporary library for a file, include <code>renv::use()</code> at the beginning of a file:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>({</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">library</span>(tidyverse, <span class="at">warn.conflicts =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>renv<span class="sc">::</span><span class="fu">use</span>(<span class="st">"ggplot2@3.5.0"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>The following package(s) will be installed:
+- cli          [3.6.3]
+- colorspace   [2.1-1]
+- fansi        [1.0.6]
+- farver       [2.1.2]
+- ggplot2      [3.5.0]
+- glue         [1.8.0]
+- gtable       [0.3.6]
+- isoband      [0.2.7]
+- labeling     [0.4.3]
+- lifecycle    [1.0.4]
+- magrittr     [2.0.3]
+- munsell      [0.5.1]
+- pillar       [1.10.0]
+- pkgconfig    [2.0.3]
+- R6           [2.5.1]
+- RColorBrewer [1.1-3]
+- rlang        [1.1.4]
+- scales       [1.3.0]
+- tibble       [3.2.1]
+- utf8         [1.2.4]
+- vctrs        [0.6.5]
+- viridisLite  [0.4.2]
+- withr        [3.0.2]
+These packages will be installed into "/tmp/RtmphW835k/renv-use-libpath-3b4a5d64f6b3".
+
+# Installing packages --------------------------------------------------------
+- Installing cli ...                            OK [linked from cache]
+- Installing glue ...                           OK [linked from cache]
+- Installing rlang ...                          OK [linked from cache]
+- Installing lifecycle ...                      OK [linked from cache]
+- Installing gtable ...                         OK [linked from cache]
+- Installing isoband ...                        OK [linked from cache]
+- Installing farver ...                         OK [linked from cache]
+- Installing labeling ...                       OK [linked from cache]
+- Installing colorspace ...                     OK [linked from cache]
+- Installing munsell ...                        OK [linked from cache]
+- Installing R6 ...                             OK [linked from cache]
+- Installing RColorBrewer ...                   OK [linked from cache]
+- Installing viridisLite ...                    OK [linked from cache]
+- Installing scales ...                         OK [linked from cache]
+- Installing fansi ...                          OK [linked from cache]
+- Installing magrittr ...                       OK [linked from cache]
+- Installing utf8 ...                           OK [linked from cache]
+- Installing vctrs ...                          OK [linked from cache]
+- Installing pillar ...                         OK [linked from cache]
+- Installing pkgconfig ...                      OK [linked from cache]
+- Installing tibble ...                         OK [linked from cache]
+- Installing withr ...                          OK [linked from cache]
+- Installing ggplot2 ...                        OK [linked from cache]
+Successfully installed 23 packages in 59 milliseconds.</code></pre>
 </div>
-<p>Tidyverse is saying hello to the world.</p>
+</div>
+<p>As reported by <code>{renv}</code>, the package was installed in temporary directory:</p>
+<pre><code>"/tmp/Rtmpn79OzQ/renv-use-libpath-275020564a66"</code></pre>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>packages can also be specified with <code>renv.lock</code> as follows <code>renv::use(lockfile = "path_to_renv.lock_file")</code></p>
+</div>
+</div>
+</section>
+<section id="isolation-type" class="level1">
+<h1>Isolation type</h1>
+<p>By default, <code>use()</code> will completely isolate the library, meaning that only the temporary library is available at the library path:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span> </span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"text"</span>,</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> <span class="dv">4</span>,</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> <span class="dv">25</span>,</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">label =</span> <span class="st">"Hello world"</span>,</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">size =</span> <span class="dv">25</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="index_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">.libPaths</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "/tmp/RtmphW835k/renv-use-libpath-3b4a5d64f6b3"
+[2] "/tmp/RtmphW835k/renv-sandbox"                 </code></pre>
 </div>
 </div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
 </div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The second path is not project-specific library but rather <code>{renv}</code>’s cache</p>
+</div>
+</div>
+<p>This behavior is particularly useful for blogs, where each blog benefits from an explicit, independent library. However, the project-specific library can also be included alongside the temporary library:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>renv<span class="sc">::</span><span class="fu">use</span>(<span class="st">"ggplot2@3.5.0"</span>, <span class="at">isolate =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>The following package(s) will be installed:
+- ggplot2 [3.5.0]
+These packages will be installed into "/tmp/RtmphW835k/renv-use-libpath-3b4a5d64f6b3".
+
+# Installing packages --------------------------------------------------------
+- Installing ggplot2 ...                        OK [linked from cache]
+Successfully installed 1 package in 3.3 milliseconds.</code></pre>
+</div>
+</div>
+<p>Now, both the temporary library and the project-specific library will be available at library path:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">.libPaths</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "/tmp/RtmphW835k/renv-use-libpath-3b4a5d64f6b3"                                      
+[2] "/home/amelzulji/zuljiamel/renv/library/linux-ubuntu-noble/R-4.4/x86_64-pc-linux-gnu"
+[3] "/tmp/RtmphW835k/renv-sandbox"                                                       </code></pre>
+</div>
+</div>
+<p>This option is ideal for testing a new package version within a project that already has many dependencies, ensuring compatibility without modifying the project-specific library.</p>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

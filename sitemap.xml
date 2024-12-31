@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://AmelZulji.github.io/zuljiamel/posts.html</loc>
-    <lastmod>2024-12-22T20:16:01.935Z</lastmod>
+    <loc>https://AmelZulji.github.io/zuljiamel/posts/20241222_test_blog/index.html</loc>
+    <lastmod>2024-12-30T20:31:52.926Z</lastmod>
   </url>
   <url>
     <loc>https://AmelZulji.github.io/zuljiamel/index.html</loc>
-    <lastmod>2024-12-22T20:16:01.935Z</lastmod>
+    <lastmod>2024-12-30T20:31:52.926Z</lastmod>
   </url>
   <url>
-    <loc>https://AmelZulji.github.io/zuljiamel/posts/20241222_test_blog/index.html</loc>
-    <lastmod>2024-12-22T20:16:01.936Z</lastmod>
+    <loc>https://AmelZulji.github.io/zuljiamel/posts.html</loc>
+    <lastmod>2024-12-30T20:31:52.926Z</lastmod>
+  </url>
+  <url>
+    <loc>https://AmelZulji.github.io/zuljiamel/posts/20241230_file_specific_renv/index.html</loc>
+    <lastmod>2024-12-31T15:41:57.464Z</lastmod>
   </url>
 </urlset>
