@@ -6,6 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="dcterms.date" content="2020-12-31">
 
 <title>File-Specific Environments in R with renv::use() – Amel Zulji</title>
 <style>
@@ -156,6 +157,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <div class="quarto-title-meta">
 
       
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">December 31, 2020</p>
+      </div>
+    </div>
     
       
     </div>
@@ -220,7 +227,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 - vctrs        [0.6.5]
 - viridisLite  [0.4.2]
 - withr        [3.0.2]
-These packages will be installed into "/tmp/RtmphW835k/renv-use-libpath-3b4a5d64f6b3".
+These packages will be installed into "/tmp/RtmpX6VNR5/renv-use-libpath-3f6b44fef7e1".
 
 # Installing packages --------------------------------------------------------
 - Installing cli ...                            OK [linked from cache]
@@ -246,7 +253,7 @@ These packages will be installed into "/tmp/RtmphW835k/renv-use-libpath-3b4a5d64
 - Installing tibble ...                         OK [linked from cache]
 - Installing withr ...                          OK [linked from cache]
 - Installing ggplot2 ...                        OK [linked from cache]
-Successfully installed 23 packages in 59 milliseconds.</code></pre>
+Successfully installed 23 packages in 62 milliseconds.</code></pre>
 </div>
 </div>
 <p>As reported by <code>{renv}</code>, the package was installed in temporary directory:</p>
@@ -271,8 +278,8 @@ Note
 <div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">.libPaths</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "/tmp/RtmphW835k/renv-use-libpath-3b4a5d64f6b3"
-[2] "/tmp/RtmphW835k/renv-sandbox"                 </code></pre>
+<pre><code>[1] "/tmp/RtmpX6VNR5/renv-use-libpath-3f6b44fef7e1"
+[2] "/tmp/RtmpX6VNR5/renv-sandbox"                 </code></pre>
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
@@ -294,20 +301,20 @@ Note
 <div class="cell-output cell-output-stdout">
 <pre><code>The following package(s) will be installed:
 - ggplot2 [3.5.0]
-These packages will be installed into "/tmp/RtmphW835k/renv-use-libpath-3b4a5d64f6b3".
+These packages will be installed into "/tmp/RtmpX6VNR5/renv-use-libpath-3f6b44fef7e1".
 
 # Installing packages --------------------------------------------------------
 - Installing ggplot2 ...                        OK [linked from cache]
-Successfully installed 1 package in 3.3 milliseconds.</code></pre>
+Successfully installed 1 package in 3.5 milliseconds.</code></pre>
 </div>
 </div>
 <p>Now, both the temporary library and the project-specific library will be available at library path:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">.libPaths</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "/tmp/RtmphW835k/renv-use-libpath-3b4a5d64f6b3"                                      
+<pre><code>[1] "/tmp/RtmpX6VNR5/renv-use-libpath-3f6b44fef7e1"                                      
 [2] "/home/amelzulji/zuljiamel/renv/library/linux-ubuntu-noble/R-4.4/x86_64-pc-linux-gnu"
-[3] "/tmp/RtmphW835k/renv-sandbox"                                                       </code></pre>
+[3] "/tmp/RtmpX6VNR5/renv-sandbox"                                                       </code></pre>
 </div>
 </div>
 <p>This option is ideal for testing a new package version within a project that already has many dependencies, ensuring compatibility without modifying the project-specific library.</p>
