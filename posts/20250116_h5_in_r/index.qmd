@@ -1,0 +1,54 @@
+---
+title: "Testing drafts"
+---
+
+```{r}
+renv::use("renv.lock")
+renv::use("posts/20250116_h5_in_r/renv.lock")
+library(tidyverse)
+library(hdf5r)
+
+n_col <- 20
+col_name <- paste0("cell", 1:n_col)
+n_row <- 15
+row_name <- paste0("gene", 1:n_row)
+
+umap_embeding <- tibble(umap1 = rnorm(n_col), umap2 = rnorm(n_col), barcode = col_name) |> column_to_rownames("barcode")
+metadata <- tibble(barcode = col_name, metric = sample(letters, size = n_col)) |> column_to_rownames(var = "barcode")
+
+counts <- matrix(rnorm(n_col * n_row), nrow = n_row, ncol = n_col)
+colnames(counts) <- col_name
+rownames(counts) <- row_name
+
+filename <- "seu_obj.h5"
+fileh5 <- H5File$new(filename, mode = "w")
+
+fileh5$create_group(name = c("count_matrix"))
+fileh5[["count_matrix"]]$create_dataset(name = "counts", robj = counts)
+fileh5[["count_matrix"]]$create_dataset(name = "counts_colnames", robj = col_name)
+fileh5[["count_matrix"]]$create_dataset(name = "counts_rownames", robj = row_name)
+
+fileh5$create_group(name = c("umap_embedings"))
+fileh5[["umap_embedings"]]$create_dataset(name = "embedings", robj = umap_embeding)
+fileh5[["umap_embedings"]]$create_dataset(name = "embedings_colnames", robj = colnames(umap_embeding))
+fileh5[["umap_embedings"]]$create_dataset(name = "embedings_rownames", robj = rownames(umap_embeding))
+
+fileh5$create_group(name = c("cell_metadata"))
+fileh5[["cell_metadata"]]$create_dataset(name = "metadata", robj = metadata)
+fileh5[["cell_metadata"]]$create_dataset(name = "metadata_colnames", robj = colnames(metadata))
+fileh5[["cell_metadata"]]$create_dataset(name = "metadata_rownames", robj = rownames(metadata))
+
+fileh5$close_all()
+
+seu_obj_data <- H5File$new(filename = "seu_obj.h5", mode = "r")
+counts <- seu_obj_data[["count_matrix"]][["counts"]]
+rownames <- seu_obj_data[["count_matrix"]][["counts_rownames"]]
+colnames <- seu_obj_data[["count_matrix"]][["counts_colnames"]]
+
+mat <- counts$read()
+rownames(mat) <- rownames$read()
+colnames(mat) <- colnames$read()
+
+mat
+
+```
