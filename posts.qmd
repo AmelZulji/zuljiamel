@@ -1,6 +1,6 @@
 ---
 title: "Blog"
-description: "This is blog about my journey"
+description: ""
 listing:
   contents: posts
   sort: "date desc"
