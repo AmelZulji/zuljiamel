@@ -1,25 +1,48 @@
 ---
-title: "Testing drafts"
+author: Amel Zulji
+title: "HDF5 files in R"
+description: "Working with HDF5 files in R"
+date: 2023.02.02
+image: hdf5_structure4.jpg
+categories:
+  - file
 ---
 
+# Introduction
+
+HDF5 (Hierarchical Data Format v5) is a binary file format designed for efficient storage and fast access to large, structured datasets. Its binary nature ensures compact size and high read/write speed, making it ideal for data-intensive applications. HDF5 supports a hierarchical layout (like folders and files) and is well-suited for storing complex objects such as expression matrices its column- and rownames, metadata etc etc. It’s supported in many programming languages, making it highly suitable for interoperable, transferable workflows across platforms and tools.
+
+To demonstrate how one can work with HDF5 in R, the {hdf5r} package will be used to write and read HDF5 files.
+
+# Simulating Example Data
+
+First, we simulate a small gene expression matrix and some associated metadata.
+
 ```{r}
-renv::use("renv.lock")
-renv::use("posts/20250116_h5_in_r/renv.lock")
-library(tidyverse)
-library(hdf5r)
+#| echo: false
+renv::use(lockfile = "renv.lock", verbose = FALSE)
+```
+
+```{r}
+suppressPackageStartupMessages({
+  library(hdf5r)
+  library(tibble)
+})
 
 n_col <- 20
 col_name <- paste0("cell", 1:n_col)
 n_row <- 15
 row_name <- paste0("gene", 1:n_row)
+counts <- matrix(rnorm(n_col * n_row), nrow = n_row, ncol = n_col, dimnames = list(row_name, col_name))
+counts[1:5,1:5]
+```
 
-umap_embeding <- tibble(umap1 = rnorm(n_col), umap2 = rnorm(n_col), barcode = col_name) |> column_to_rownames("barcode")
-metadata <- tibble(barcode = col_name, metric = sample(letters, size = n_col)) |> column_to_rownames(var = "barcode")
+```{r}
+metadata <- tibble(barcode = col_name, metric = sample(letters, size = n_col))
+head(metadata)
+```
 
-counts <- matrix(rnorm(n_col * n_row), nrow = n_row, ncol = n_col)
-colnames(counts) <- col_name
-rownames(counts) <- row_name
-
+```{r}
 filename <- "seu_obj.h5"
 fileh5 <- H5File$new(filename, mode = "w")
 
@@ -27,11 +50,6 @@ fileh5$create_group(name = c("count_matrix"))
 fileh5[["count_matrix"]]$create_dataset(name = "counts", robj = counts)
 fileh5[["count_matrix"]]$create_dataset(name = "counts_colnames", robj = col_name)
 fileh5[["count_matrix"]]$create_dataset(name = "counts_rownames", robj = row_name)
-
-fileh5$create_group(name = c("umap_embedings"))
-fileh5[["umap_embedings"]]$create_dataset(name = "embedings", robj = umap_embeding)
-fileh5[["umap_embedings"]]$create_dataset(name = "embedings_colnames", robj = colnames(umap_embeding))
-fileh5[["umap_embedings"]]$create_dataset(name = "embedings_rownames", robj = rownames(umap_embeding))
 
 fileh5$create_group(name = c("cell_metadata"))
 fileh5[["cell_metadata"]]$create_dataset(name = "metadata", robj = metadata)
@@ -49,6 +67,10 @@ mat <- counts$read()
 rownames(mat) <- rownames$read()
 colnames(mat) <- colnames$read()
 
-mat
+mat[1:5,1:5]
 
+```
+
+```{r}
+file.remove("seu_obj.h5")
 ```

@@ -1,0 +1,137 @@
+---
+title: "To be defined"
+date: 2025.01.04
+---
+
+```{r}
+#| echo: false
+
+renv::use("tidyverse@2.0.0", "tidymodels", "patchwork", verbose = FALSE)
+library(tidyverse, warn.conflicts = FALSE)
+library(patchwork, warn.conflicts = FALSE)
+
+n <- 2^(2:7)
+```
+
+Have you ever heard that if your sample is big enough you can compute z- or t-test and you dont have to worry whether your sample is normally distributed?
+
+This means that in the @fig-sample-hist for the samples with n = `r n[n<32]` we cannot apply the test but for the samples n = `r n[n>=32]` you can.
+
+```{r}
+#| label: fig-sample-hist
+#| fig-cap: Histrogram of samples with different size
+
+set.seed(123456)
+population <- rexp(n = 100000, rate = 0.5)
+
+sample_data <- map(n, \(x) tibble(value = sample(population, x)))
+sample_hist <- map(
+  sample_data, 
+  \(x) x %>% 
+    ggplot(aes(x = value)) + 
+    geom_histogram() + 
+    ggtitle(str_glue('sample size =  {nrow(x)}'))
+  )
+
+
+wrap_plots(sample_hist)
+```
+
+Why is that? After all test explicitly require normality and the samples with n = 64,123 do not seem to be normally distributed.
+
+# Z test
+
+Z-test is used to determine whether the difference between means is statistically significant. It can compare mean of asample and population mean (one sample Z-test), or it can compare means of 2 samples (two sample Z-test). assumes that the groups are either sampled from normally distributed population or that the groups are large enough (usually more than 30 observations) to hold the assumption of CLT.
+
+It computes Z statistic with following formula
+
+$$
+\frac{\bar{X} - \mu}{\sigma / \sqrt{n}}
+$$
+
+The company producing your favorite chocolate claims that the average mass of the chocolate is $45g \pm1g$. How would you test if that is true?
+
+Well you can be a scientis about the problem and perform hypothezis testing. You can ask everybody who you know that eats the chocolate to weight each chocolate before they eat them and record the value. After some time you start getting the data from your poznanici.
+
+```{r}
+#| echo: false
+
+min_sample_size <- 70
+max_sample_size <- 130
+n_samples <- 40
+
+sample_size = sample(min_sample_size:max_sample_size, size = n_samples)
+
+choco_data_list <- map2(
+  sample_size,seq_along(sample_size), 
+  \(x,y) 
+  tibble(
+    PersonID = str_glue("Person {as.character(y)}"),
+    "Chocolate mass" = rnorm(n = x, mean = 45, sd = 1)
+    )
+  )
+
+df <- list_rbind(choco_data_list)
+df <- df %>% mutate(PersonID = factor(PersonID, levels = str_sort(unique(PersonID), numeric = TRUE)))
+```
+
+You start exploring your data and see in @fig-chocodata that each person recorded somewhere between `r  min_sample_size` and `r  max_sample_size` chocolates masses.
+
+```{r}
+#| label: fig-chocodata
+#| fig-cap: Number chocolates that each person recorded.
+
+df %>% 
+  ggplot() + 
+  geom_bar(aes(x = PersonID)) + 
+  scale_y_continuous(name = "Number of weighted chocolates") + 
+  scale_x_discrete(name = NULL) + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+Next you want to see the distribution of the data. YOu pick up few random samples and check:
+
+```{r}
+df %>% 
+  filter(PersonID %in% str_glue("Person {sample(1:40,3)}")) %>% 
+  ggplot(aes(`Chocolate mass`)) + 
+  geom_density() + 
+  facet_grid(cols = vars(PersonID))
+```
+
+Next you want to compare how do they look like together
+
+```{r}
+df %>% 
+  ggplot(aes(`Chocolate mass`, fill = PersonID)) + 
+  geom_density(alpha = 0.5) + 
+  theme(legend.position = "none")
+```
+
+Next, you want to see what is the average chocolate mass recorded by each person.
+
+```{r}
+df %>% 
+  ggplot(aes(x = PersonID, y = `Chocolate mass`)) + 
+  geom_boxplot() + 
+  scale_x_discrete(name = NULL) + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+Next you want to see distribution of means
+
+```{r}
+df %>% 
+  summarise(.by = PersonID, mean_mass = mean(`Chocolate mass`)) %>% 
+  ggplot(aes(x = mean_mass)) + 
+  geom_density() + 
+  geom_point(aes(y = 0))
+```
+
+```{r}
+df %>% 
+  filter(PersonID %in% str_glue("Person {sample(1:40,3)}")) %>% 
+  ggplot(aes(`Chocolate mass`)) + 
+  geom_histogram() + 
+  facet_grid(cols = vars(PersonID))
+```

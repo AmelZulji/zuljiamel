@@ -1,0 +1,287 @@
+---
+title: "Central Limit Theorem"
+execute: 
+  echo: false
+---
+
+```{r}
+set.seed(4321)
+renv::use(lockfile = "renv.lock", verbose = FALSE)
+suppressPackageStartupMessages({
+  library(tidyverse)
+  library(patchwork)
+  library(gt)
+  library(scales)
+  library(glue)
+})
+```
+
+# Aim
+
+Simulation-based demonstration of the Central Limit Theorem (CLT), highlighting its assumptions, implications, and practical significance in statistical inference.
+
+```{r}
+# define function for computing maximum bin count
+max_bin_count <- function(x, binwidth = NULL, nbin = NULL) {
+  min_bound <- x %>% min() %>% floor()
+  max_bound <- x %>% max() %>% ceiling() + binwidth
+  breaks <- seq(min_bound, max_bound, binwidth) - binwidth / 2
+  bins = cut(x, breaks = breaks)
+  # if you want max bins do bellow
+  table(bins) %>% max()
+}
+
+# define bins
+nbin <- 40
+binwidth <- 0.02
+
+# define theme for histogram
+ct <- theme(
+  axis.title = element_blank(),
+  axis.text = element_blank(),
+  axis.ticks = element_blank(), 
+  # legend.position = "bottom",
+  legend.title = element_blank(),
+  legend.text = element_text(size = 12),
+  strip.text = element_text(size = 12)
+)
+
+# Define function for simulating population
+func <- c(
+  "normal" = \(x) rnorm(x, mean = 0.5, sd = 0.1),
+  # "exp" = rexp,
+  "uniform" = \(x) runif(x, min = 0, max = 1),
+  # "gamma" = \(x) rgamma(x, shape = 5, scale = 1),
+  "right-skewed" = \(x) rbeta(x,2,6)
+)
+
+# Define the size of population
+N <- 100000
+
+# simulate populations
+population <- 
+  expand_grid(N, func) %>% # make a grid
+  mutate(distribution = names(func), N = set_names(N, names(func))) %>%
+  rowwise() %>% 
+  mutate(population = map(N, func)) %>% 
+  mutate(
+    across(
+      population,
+      list(
+        mu = mean,
+        sigma = sd,
+        min = min,
+        max = max,
+        max_bin = \(x) max_bin_count(x, binwidth = binwidth)
+      ),
+      .names = "{.fn}"
+    )
+  ) %>% 
+  mutate(
+    histo_data = list(tibble(value = population)),
+    area_data = list(tibble(x = c(mu - sigma, mu + sigma),y = c(max_bin, max_bin))),
+    segment_data = list(tibble(x = mu, y = 0, yend = max_bin)),
+    limits = list(c(min, max))
+  ) %>% ungroup()
+
+population_plot <- population %>% 
+  mutate(
+    histogram = 
+      pmap(list(histo_data, area_data, segment_data, limits, distribution), \(h,a,s,l,d) {
+        h %>% 
+          ggplot(aes(value)) + 
+          geom_histogram(binwidth = binwidth, fill = "lightblue", color = "gray65") +
+          geom_area(data = a, aes(x = x, y = y, fill = "mu %+-% sigma"), alpha = 0.4) +
+          geom_segment(data = s, aes(x = x, y = y, yend = yend, linetype = "mu"), color = "red", linewidth = 0.8) +
+          scale_fill_manual(values = "green3", name = "Spread", labels = label_parse()) +
+          scale_linetype_manual(values = "22", name = "Centrality", labels = label_parse()) +
+          scale_x_continuous(limits = l) +
+          facet_grid(cols = vars({d})) +
+          ct
+      })) %>% 
+  select(N, distribution, histogram)
+
+
+n <- c(3,5,10,20)
+nsample <- 1000
+sample_id <- paste0("X", 1:nsample)
+
+sample_grid <- 
+  expand_grid(
+    population %>% select(distribution, limits), 
+    n, 
+    sample_id
+  )
+
+sample_groups <- 
+  sample_grid %>% 
+  rowwise() %>% 
+  mutate(
+    sample = list(sample(population$population[[distribution]], size = n)), 
+    xbar = mean(sample)
+    ) %>% 
+  ungroup()
+
+# compute statistics
+samples <- sample_groups %>%
+  mutate(
+    .by = c(distribution, n),
+    sigma_xbar = sd(xbar),
+    mu_xbar = mean(xbar),
+    max_bin = max_bin_count(xbar, binwidth = binwidth)
+  ) %>% 
+  nest(.by = -matches("^(sample_id|sample|xbar)$"), histo_data = xbar) %>% 
+  rowwise() %>% 
+  mutate(
+    area_data = list(tibble(x = c(mu_xbar - sigma_xbar, mu_xbar + sigma_xbar),y = c(max_bin, max_bin))),
+    segment_data = list(tibble(x = mu_xbar, y = 0, yend = max_bin))
+  ) %>% ungroup()
+
+sample_plots <- samples %>% 
+  mutate(
+    histogram = 
+      pmap(list(histo_data, area_data, segment_data, limits, n), \(h, a, s, l, n) {
+        facet_row <- str_glue("n = {n}")
+        h %>% 
+          ggplot(aes(xbar)) + 
+          geom_histogram(binwidth = binwidth, fill = "lightblue", color = "gray65") + 
+          geom_area(data = a, aes(x = x, y = y, fill = "mu[bar(x)] %+-% S.E.M"), alpha = 0.35) + 
+          geom_segment(data = s, aes(x = x, y = 0, yend = yend, linetype = "mu[bar(x)]"), color = "blue", linewidth = 0.8) +
+          scale_fill_manual(values = "orange", name = "Spread", labels = label_parse()) +
+          scale_linetype_manual(values = "22", name = "Centrality", labels = label_parse()) +
+          # ggtitle(str_glue("n = {n}")) +
+          facet_grid(rows = vars({facet_row}), switch = "y") +
+          coord_cartesian(xlim = l) +
+          ct
+      })) %>% 
+  select(n,distribution,histogram)
+
+sample_plots <- 
+  sample_plots %>% 
+  mutate(
+    histogram = case_when(
+      distribution != "normal" ~ map(histogram, \(x) x + theme(strip.text.y = element_blank())),
+      T ~ histogram
+      )
+    )
+
+merge_plot <- bind_rows(population_plot,sample_plots) %>% arrange(distribution)
+num_col <- merge_plot$distribution %>% unique() %>% length()
+num_row <- nrow(merge_plot) / num_col
+
+```
+
+# Introduction
+
+The CLT states that the sampling distribution of the sample mean will converge to normal distribution as the sample size increases and is independent from the distribution from which sampling is performed.
+
+To demonstrate this, 3 different population (N = `{r} format(N, scientific = F)`) following `{r} glue_collapse(names(func), sep = ", ", last = " and ")` distribution were simulated and summary statistics computed @fig-population.
+
+```{r}
+#| fig-cap: "Simulated populations and coresposnding summary statistics, μ - population statistics and σ - population standard deviation"
+#| label: fig-population
+#| fig-width: 7
+#| fig-height: 3
+#| warning: false
+
+population_plot <- wrap_plots(
+  merge_plot %>% filter(!is.na(N)) %>% pull(histogram),
+  guides = "collect"
+) & theme(
+  legend.position = "bottom",
+  plot.margin = margin(0,0,0,0)
+  )
+
+print(population_plot)
+```
+
+Next, from each population sampling was performed and samples with `{r} glue_collapse(glue("n = {n}"), sep = ", ", last = " and ")` were drawn `{r} nsample` times and corresponsing statistics was computed
+
+```{r}
+#| fig-cap: "Sampling from simulated populations for different samples size and 10000 iterations"
+#| label: fig-sampling
+#| fig-width: 7
+#| fig-height: 7
+#| warning: false
+
+pfin <- wrap_plots(merge_plot$histogram, nrow = num_row, ncol = num_col, byrow = FALSE, guides = "collect") & theme(legend.position = "bottom")
+print(pfin)
+```
+
+```{r}
+set.seed(4321)
+n <- c(100)
+sample_id <- paste0("X", 1:3)
+sample_grid <- 
+  expand_grid(
+    population %>% filter(distribution == "normal") %>%  select(distribution), 
+    n, 
+    sample_id
+  )
+
+df <- 
+  sample_grid %>% 
+  rowwise() %>% 
+  mutate(sample = list(sample(population$population[[distribution]], size = n))) %>% 
+  ungroup() %>% 
+  unnest(sample)
+
+df <- 
+  df %>% 
+  group_by(sample_id) %>% 
+  mutate(n = row_number()) %>% 
+  mutate(
+    cum_mean = map_dbl(seq_along(n), \(x) mean(sample[1:x])),
+    cum_sd = map_dbl(seq_along(n), \(x) sd(sample[1:x])),
+    cum_sem = cum_sd / sqrt(n)
+    ) %>% 
+  ungroup() %>% 
+  filter(!n == 1)
+
+norm_pop_param <- population %>% filter(distribution == "normal")
+
+gl <- guides(linetype = guide_legend(
+  theme = theme(
+    legend.text = element_text(size = 12),
+    legend.title = element_blank()
+  )
+))
+
+p1 <- df %>% 
+  ggplot(aes(x = n, y = cum_mean, colour = sample_id)) + 
+  geom_point() + 
+  geom_function(fun = \(x) norm_pop_param$mu, aes(linetype = "mu"), color = "black", linewidth = 1) + 
+  scale_linetype_manual(values = c("mu" = "1111"),labels = label_parse()) + 
+  labs(y = "Cumulative mean") +
+  gl
+
+p2 <- df %>% 
+  ggplot(aes(x = n, y = cum_sd, colour = sample_id)) + 
+  geom_point() + 
+  geom_function(fun = \(x) norm_pop_param$sigma, aes(linetype = "sigma"), color = "black", linewidth = 1) + 
+  scale_linetype_manual(values = c("sigma" = "1131"),labels = label_parse()) + 
+  labs(y = "Cumulative SD") +
+  gl
+
+p3 <- df %>% 
+  ggplot(aes(x = n, y = cum_sem, colour = sample_id)) + 
+  geom_point() + 
+  geom_function(fun = \(x) norm_pop_param$sigma/sqrt(x), aes(linetype = "frac(sigma, sqrt(n))"), color = "black", linewidth = 1) + 
+  scale_linetype_manual(values = c("frac(sigma, sqrt(n))" = "3131"),labels = label_parse()) + 
+  scale_y_continuous(name = expression(paste("Cumulative SEM (", frac(s,sqrt(n)), ")"))) +
+  gl
+
+```
+
+```{r}
+#| fig-height: 8
+#| fig-width: 8
+
+fig <- 
+  free(p1, type = "label", side = "l") + 
+  free(p2, type = "label", side = "l") + 
+  p3 + 
+  plot_layout(ncol = 1, axes = "collect", guides = "collect")
+
+fig
+```

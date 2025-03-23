@@ -1,0 +1,50 @@
+---
+title: "To be defined"
+date: 2025.01.04
+---
+
+```{r}
+#| echo: false
+
+renv::use("tidyverse@2.0.0", "tidymodels", verbose = FALSE)
+library(tidyverse, warn.conflicts = FALSE)
+```
+
+# Introduction
+
+```{r}
+df <- read_csv("usain_bolt_100m_wr_split_times.csv", show_col_types = FALSE)
+df
+```
+
+```{r}
+df %>% 
+  ggplot(aes(x = time, y = distance)) + 
+  geom_point() + 
+  geom_line()
+
+```
+
+```{r}
+# Define and fit the linear model
+lm_model <- 
+  linear_reg() %>%
+  set_engine("lm") %>%
+  set_mode("regression") %>%
+  fit(time ~ poly(distance,2), data = df)
+
+tidy(lm_model)
+
+```
+
+```{r}
+poly_formula <- function(x) {
+  5.298182 + 9.415443 * x - 0.741850 * x^2
+}
+
+df %>% 
+  ggplot(aes(x = time, y = distance)) + 
+  geom_point() + 
+  geom_line() +
+  geom_function(fun = poly_function, color = "red", size = 1.2)
+```

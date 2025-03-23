@@ -1,0 +1,283 @@
+---
+title: "Central limit theorem and sampling distribution"
+author: "Test"
+date: "`r Sys.Date()`"
+format: html
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r}
+#| echo: false
+#| warning: false
+
+renv::use(lockfile = "renv.lock", verbose = FALSE)
+library(tidyverse)
+library(patchwork)
+library(gt)
+
+```
+
+In scientific research, we are usually interested in estimating population parameters such as mean, median, standard deviation and more. However, obtaining measurements from the entire population is almost impossible. The reason is that measuring the whole population is very expensive and time consuming.
+
+Instead, we draw samples from the population and use statistics to estimate parameters of population based on the samples.
+
+Since the same parameters (i.e. mean, median, ...) are used for both population and samples, a standard notion is used to distinguish them: population parameters are denoted with Greek letters, while sample parameters with Roman letters. Most common parameters are shown in @tbl-stat-notion.
+
+| Parameter          | Population         | Sample    |
+|--------------------|--------------------|-----------|
+| Mean               | μ (mu)             | x̄ (x-bar) |
+| Standard Deviation | σ (sigma)          | s         |
+| Variance           | σ² (sigma squared) | s²        |
+| Size               | N                  | n         |
+
+: Statistical notion for population and sample parameters {#tbl-stat-notion}
+
+# Central limit theorem
+
+::: callout-important
+The central limit theorem (CLT) states that sampling distribution of the sample mean approaches normal distribution as the sample size increases regardless of the population distribution.
+:::
+
+There are 3 main points are important from this:
+
+1.  Sampling distribution of the sample mean is normal
+
+2.  As the sample size increases the distribution approaches normal distribution
+
+3.  The assumption holds true regardless of the population distribution
+
+To demonstrate all 3 points, we will use a population of adult female height. From the data we know that population has mean of 162cm and standard deviation of 6cm.
+
+::: callout-note
+In reality we almost never have population data (otherwise we wont need statistics), but we used here a well known population to demonstrate principles of CLT
+:::
+
+@fig-hei-pop show population of x,y
+
+```{r}
+#| label: fig-hei-pop
+#| fig-cap: Histrogram of ...
+#| warning: false
+#| fig-height: 3
+
+N <- 100000 # population size (the simulated population will have 100000 observations)
+mu <- 162    # poplatuon mean
+sigma <- 6  # population standard deviation
+
+set.seed(123456) # set random seed to ensure reproducibility
+
+height_population <- rnorm(n = N, mean = mu, sd = sigma)
+height_data <- tibble(
+  height = height_population, 
+  id = seq_along(height_population)
+  )
+
+p_histo <- height_data %>% 
+  ggplot(aes(x = height)) + 
+  geom_histogram(bins = 100) + 
+  geom_function(fun = dnorm) +
+  geom_polygon(
+    data = tibble(
+      x = c(c(mu-sigma, mu+sigma, mu+sigma, mu-sigma)),
+      y = c(0,0,Inf, Inf)
+      ), 
+    mapping = aes(x = x , y =  y,  fill = "sigma + mu"),
+    alpha = 0.5
+    ) +
+  scale_x_continuous(name = "Height [cm]") +
+  theme_bw()
+
+p_histo
+
+dens_dat <- density(height_data$height) 
+dens_dat <- dens_dat[c("x","y")] %>% as.data.frame()
+mu_dens <- dens_dat[which.min(abs(dens_dat$x - mu)), "y"]
+
+p_dens <- dens_dat %>% 
+  ggplot(aes(x,y)) + 
+  geom_area(
+    data = dens_dat %>% filter(x > mu - sigma & x < mu + sigma),
+    aes(fill = "sigma"),
+    alpha = 0.5
+    ) +
+  geom_line() + 
+  geom_segment(aes(x = mu, yend = mu_dens, y = 0, color = "mu"), linetype = "dashed") + 
+  coord_cartesian(expand = FALSE, ylim = c(0,0.068)) +
+  scale_fill_manual(values = "orange", name = "Spread", labels = scales::label_parse()) + 
+  scale_color_manual(name = "Centrality", values = "blue", labels = scales::label_parse()) + 
+  scale_x_continuous(breaks = c(mu,mu+(1:3*sigma),mu-(1:3*sigma)), name = "Height [cm]") + 
+  scale_y_continuous(name = "Density")
+
+
+p_histo + p_dens + plot_annotation(tag_levels = "a") & theme(plot.tag = element_text(size = 20, face = "bold"))
+```
+
+## Sampling distribution of the sample mean is normal
+
+Lets draw a sample of size 5 from the height population
+
+```{r}
+set.seed(123456)
+n <- 5
+sample <- sample(height_population, size = n) %>% round(2)
+xbar <- mean(sample) %>% round(2)
+xbar
+```
+
+So the mean of the sample is `r xbar`. However in order to have a distribution of the the sample means, there need to be more sample means. Hence lets draw 25 samples from the population
+
+```{r}
+n <- c(3:100)
+draw <- seq(70)
+bin_width <- 2
+
+plot_df <- map(n, \(n) {
+  df_list <- map(draw, \(draw) {
+    sample <- sample(height_population, size = n) %>% round(2)
+    xbar <- mean(sample) %>% round(2)
+    sample_format <- ifelse(length(sample)<= 3, str_c(sample, collapse = ", "), paste0(str_c(sample[1:3], collapse = ", "), ", ..."))
+    df <- tibble(draw = draw, n = n, sample = sample_format, xbar = xbar)
+  })
+  df <- list_rbind(df_list)
+  df <- df %>% 
+    mutate(xbar_mean = mean(xbar), xbar_sd = sd(xbar))
+})
+
+anno_df <-  map(plot_df, \(df) 
+    df %>% 
+      select(xbar_mean, xbar_sd) %>% unique()
+)
+
+n_obs_show <- 8
+tbl_df <- map(plot_df, \(x) {
+  x %>% 
+    mutate(across(everything(), as.character)) %>%
+    add_row(draw = "...", n = "...", sample = "...", xbar = "...", .after = n_obs_show) %>%
+    filter(draw %in% as.character(c(head(draw, n_obs_show), "..." , tail(draw, n_obs_show))))
+})
+
+plot <- map(
+  plot_df,
+  \(x)
+  x %>%
+    ggplot(aes(x = xbar)) +
+    geom_histogram(bins = 30) +
+    scale_x_continuous(
+      # name = parse(text = "bar(x)"),
+      limits = c(mu - 2 * sigma, mu + 2 * sigma)
+    )
+)
+
+plot[[1]]
+
+max_bin <- map(plot, \(p) {
+  # Extract histogram bin data using ggplot_build()
+  gg_data <- ggplot_build(p)$data[[1]]
+  # Find the bin with the maximum count
+  max_bin <- gg_data[which.max(gg_data$count), ][["count"]]
+  max_bin
+})
+
+anno_df <- map2(anno_df, max_bin, \(x,y) {x[["max_bin"]] <- y; x})
+
+test <- pmap(list(plot[10:13], anno_df[10:13]), \(x,z) {
+  p <- 
+    x + 
+    geom_segment(data = z, aes(x = xbar_mean, y = 0, yend = max_bin, linetype = "test")) +
+    geom_rect(data = z, aes(
+    xmin = xbar_mean - xbar_sd,
+    xmax = xbar_mean + xbar_sd,
+    ymin = 0,
+    ymax = max_bin, fill = "test"
+  ),
+  alpha = 0.5
+)
+})
+
+test[[1]]
+
+
+tab <- map(
+  tbl_df,
+  \(x)
+  x %>%
+    gt() %>% 
+    cols_label(xbar = "{{x\u0304}}") %>% 
+    cols_align(align = "center") %>% 
+    tab_style(
+      style = cell_borders(
+        sides = c("left", "right"),
+        color = "black",
+        weight = px(1.5),
+        style = "solid"
+      ),
+      locations = cells_body()
+    ) %>% 
+    wrap_table(space = "fixed")
+)
+
+final_plot <- map2(tab, plot, \(x,y) x + y)
+
+final_plot[[1]]
+```
+
+## As the sample size increases the distribution approaches normal distribution
+
+```{r}
+set.seed(123456)
+n <- 20
+draw <- seq(25)
+
+
+df_list <- map(X, \(x) {
+  param1 <- ifelse(length(x) <= 3, length(x), 3)
+  param2 <- ifelse(length(x) <= 3, "", ", ...")
+  tibble(
+    sample = str_glue('{str_c(x[1:param1], collapse = ", ")} {param2}'),
+    xbar = mean(x) %>% round(2)
+    )
+  }
+)
+
+df <- 
+  list_rbind(df_list) %>% 
+  add_column(draw, .before = "sample", n = n)
+
+n_obs_show <- 8
+
+df_tab <- df %>%
+  mutate(across(everything(), as.character)) %>%
+  add_row(
+    draw = "...",
+    n = "...",
+    sample = "...",
+    xbar = "...",
+    .after = n_obs_show
+  ) %>%
+  filter(draw %in% as.character(c(
+    head(draw, n_obs_show), "..." , tail(draw, n_obs_show)
+  )))
+
+tab <- df_tab %>% 
+  gt() %>% 
+  cols_label(xbar = "{{x\u0304}}") %>% 
+  cols_align(align = "center") %>% 
+  tab_style(
+    style = cell_borders(
+      sides = c("left", "right"),
+      color = "black",
+      weight = px(1.5),
+      style = "solid"
+    ),
+    locations = cells_body()
+  ) %>% wrap_table(space = "fixed")
+
+
+p <- df %>% 
+  ggplot(aes(x = xbar)) + 
+  geom_histogram(bins = 10) + 
+  scale_x_continuous(name = parse(text = "bar(x)"))
+
+tab + p
+```

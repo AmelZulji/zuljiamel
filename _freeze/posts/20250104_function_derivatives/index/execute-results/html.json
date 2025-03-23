@@ -1,0 +1,17 @@
+{
+  "hash": "16d62da5a8ae0ba5e7a139b7e2251245",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\nauthor: Amel Zulji\ntitle: \"Central Limit Theorem\"\ndescription: \"Simulation-based explanation of the Central Limit Theorem (CLT) and its implications\"\ndate: 2023.05.02\ncategories:\n  - statistics\nexecute: \n  echo: false\n---\n\n::: {.cell}\n\n:::\n\n::: {.cell}\n\n:::\n\n\n\n# Introduction\n\nThe CLT states that, as the sample size increases, the distribution of the sample mean approaches normal distribution—regardless of the shape of the original population distribution.\n\nTo demonstrate this, 3 different population (N = 100000) following normal\\, uniform and right\\-skewed distribution were simulated and summary statistics computed @fig-population.\n\n\n\n::: {.cell}\n::: {.cell-output-display}\n![Simulated populations and coresposnding summary statistics, μ - population statistics and σ - population standard deviation](index_files/figure-html/fig-population-1.png){#fig-population width=672}\n:::\n:::\n\n\n\nNext, repeated sampling was carried out from each population. For every distribution, 1000 samples were drawn at each of the following sizes: n = 3, 5, 10, and 20. For each sample, the mean was computed, and the resulting sampling distributions were visualized (Figure @fig-sampling). As the sample size increased, the distributions of sample means became increasingly normal, consistent with the Central Limit Theorem—even when the underlying populations were not normally distributed.\n\nNext, from each population sampling was performed and samples with n = 3\\, n = 5\\, n = 10 and n = 20 were drawn 1000 times and corresponsing statistics was computed\n\n\n\n::: {.cell .preview-image}\n::: {.cell-output-display}\n![Sampling from simulated populations for different samples size and 10000 iterations](index_files/figure-html/fig-sampling-1.png){#fig-sampling width=672}\n:::\n:::\n\n::: {.cell}\n\n:::\n\n::: {.cell}\n::: {.cell-output-display}\n![](index_files/figure-html/unnamed-chunk-6-1.png){width=768}\n:::\n:::\n",
+    "supporting": [
+      "index_files"
+    ],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}
