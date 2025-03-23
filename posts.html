@@ -6,6 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="description" content="This is blog about my journey">
 
 <title>Blog – Amel Zulji</title>
 <style>
@@ -128,7 +129,6 @@ window.Quarto = {
 };
 </script>
 
-<link rel="stylesheet" href="styles.css">
 </head>
 
 <body class="nav-fixed">
@@ -175,7 +175,12 @@ window.Quarto = {
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-page-left">
       <h1 class="title">Blog</h1>
-                      </div>
+                  <div>
+        <div class="description">
+          This is blog about my journey
+        </div>
+      </div>
+                </div>
   </div>
     
   
@@ -192,7 +197,7 @@ window.Quarto = {
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         
-    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(2)</span></div></div></div>
+    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(2)</span></div><div class="category" data-category="statistics">statistics <span class="quarto-category-count">(1)</span></div></div></div>
 <!-- main -->
 <main class="content quarto-banner-title-block column-page-left" id="quarto-document-content">
 
@@ -205,33 +210,66 @@ window.Quarto = {
 
 
 <div class="quarto-listing quarto-listing-container-default" id="listing-listing">
+<div class="listing-actions-group">
+   <div class="input-group input-group-sm quarto-listing-sort">
+     <span class="input-group-text"><i class="bi bi-sort-down"></i></span>
+     <select id="listing-listing-sort" class="form-select" aria-label="Order By" onchange="window['quarto-listings']['listing-listing'].sort(this.options[this.selectedIndex].value, { order: this.options[this.selectedIndex].getAttribute('data-direction')})">
+       <option value="" disabled="" selected="" hidden="">Order By</option>
+       <option value="index" data-direction="asc">Default</option>
+         <option value="listing-title" data-direction="asc">
+          Title
+        </option>
+         <option value="listing-date-sort" data-direction="asc">
+          Date - Oldest
+        </option>
+         <option value="listing-date-sort" data-direction="desc">
+          Date - Newest
+        </option>
+         <option value="listing-author" data-direction="asc">
+          Author
+        </option>
+     </select>
+  </div>
+    <div class="input-group input-group-sm quarto-listing-filter">
+      <span class="input-group-text"><i class="bi bi-search"></i></span>
+      <input type="text" class="search form-control" placeholder="Filter">
+    </div>
+</div>
 <div class="list quarto-listing-default">
-<div class="quarto-post image-right" data-index="0" data-listing-date-sort="1609369200000" data-listing-file-modified-sort="1735659859184" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="2" data-listing-word-count-sort="259">
+<div class="quarto-post image-right" data-index="0" data-categories="statistics" data-listing-date-sort="1682978400000" data-listing-file-modified-sort="1742766041212" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="9" data-listing-word-count-sort="1622">
 <div class="thumbnail">
-<p><a href="./posts/20241230_file_specific_renv/index.html" class="no-external"></a></p><a href="./posts/20241230_file_specific_renv/index.html" class="no-external">
-<div class="listing-item-img-placeholder card-img-top" >&nbsp;</div>
-</a><p><a href="./posts/20241230_file_specific_renv/index.html" class="no-external"></a></p>
+<p><a href="./posts/20250104_function_derivatives/index.html" class="no-external"></a></p><a href="./posts/20250104_function_derivatives/index.html" class="no-external">
+<p class="card-img-top"><img src="posts/20250104_function_derivatives/index_files/figure-html/fig-sampling-1.png"  class="thumbnail-image card-img"/></p>
+</a><p><a href="./posts/20250104_function_derivatives/index.html" class="no-external"></a></p>
 </div>
 <div class="body">
 <h3 class="no-anchor listing-title">
-<a href="./posts/20241230_file_specific_renv/index.html" class="no-external">File-Specific Environments in R with <code>renv::use()</code></a>
+<a href="./posts/20250104_function_derivatives/index.html" class="no-external">Central Limit Theorem</a>
 </h3>
 <div class="listing-subtitle">
-<a href="./posts/20241230_file_specific_renv/index.html" class="no-external"></a>
+<a href="./posts/20250104_function_derivatives/index.html" class="no-external"></a>
+</div>
+<div class="listing-categories">
+<div class="listing-category" onclick="window.quartoListingCategory('statistics'); return false;">
+statistics
+</div>
 </div>
 <div class="listing-description">
-<a href="./posts/20241230_file_specific_renv/index.html" class="no-external">The <code>use()</code> function from <code>{renv}</code> package is a powerful way to create an isolated library for use with a single file (i.e.&nbsp;<code>.R</code>, <code>.qmd</code>, <code>.rmd</code>, …). Since this library is temporary…</a>
+<a href="./posts/20250104_function_derivatives/index.html" class="no-external">Simulation-based explanation of the Central Limit Theorem (CLT) and its implications</a>
 </div>
 </div>
 <div class="metadata">
-<a href="./posts/20241230_file_specific_renv/index.html" class="no-external">
+<a href="./posts/20250104_function_derivatives/index.html" class="no-external">
 <div class="listing-date">
-Dec 31, 2020
+May 2, 2023
+</div>
+<div class="listing-author">
+Amel Zulji
 </div>
 </a>
 </div>
 </div>
-<div class="quarto-post image-right" data-index="1" data-listing-date-sort="1608418800000" data-listing-file-modified-sort="1735590712926" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="41">
+<div class="quarto-post image-right" data-index="1" data-listing-date-sort="1608418800000" data-listing-file-modified-sort="1742766416732" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="31">
 <div class="thumbnail">
 <p><a href="./posts/20241222_test_blog/index.html" class="no-external"></a></p><a href="./posts/20241222_test_blog/index.html" class="no-external">
 <p class="card-img-top"><img src="posts/20241222_test_blog/index_files/figure-html/unnamed-chunk-2-1.png"  class="thumbnail-image card-img"/></p>
@@ -239,19 +277,22 @@ Dec 31, 2020
 </div>
 <div class="body">
 <h3 class="no-anchor listing-title">
-<a href="./posts/20241222_test_blog/index.html" class="no-external">Hello world</a>
+<a href="./posts/20241222_test_blog/index.html" class="no-external">Test blog</a>
 </h3>
 <div class="listing-subtitle">
 <a href="./posts/20241222_test_blog/index.html" class="no-external"></a>
 </div>
 <div class="listing-description">
-<a href="./posts/20241222_test_blog/index.html" class="no-external">Get ready to be greated by tidyverse</a>
+<a href="./posts/20241222_test_blog/index.html" class="no-external">Simple test to check if blog is properly set</a>
 </div>
 </div>
 <div class="metadata">
 <a href="./posts/20241222_test_blog/index.html" class="no-external">
 <div class="listing-date">
 Dec 20, 2020
+</div>
+<div class="listing-author">
+Amel Zulji
 </div>
 </a>
 </div>
