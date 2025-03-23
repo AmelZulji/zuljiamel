@@ -1,39 +1,15 @@
 ---
-title: "Hello world"
+title: "Test blog"
 author: "Amel Zulji"
-description: "this is test with slightly longer title to be rendered at the begning of the page"
+description: "Simple test to check if blog is properly set"
 date: 2020.12.20
 image: true
 ---
 
-Get ready to be greated by tidyverse
-
 ```{r}
 suppressPackageStartupMessages({
   library(ggplot2, warn.conflicts = FALSE)
-  library(stringr)
 })
-
-```
-
-Tidyverse is saying hello to the world.
-
-```{r}
-n = 2
-str_glue("This is a test with a variable n = {n}")
-```
-
-```{r}
-#| fig-cap: !expr 'str_glue("This is a test with a variable n = {n}")'
-
-ggplot() + 
-  annotate(
-  "text",
-  x = 4,
-  y = 25,
-  label = "Hello world",
-  size = 25
-)
 
 ```
 
@@ -45,7 +21,7 @@ ggplot() +
   "text",
   x = 4,
   y = 25,
-  label = "Hello worlder",
+  label = "Test blog",
   size = 25
 )
 
