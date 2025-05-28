@@ -174,12 +174,12 @@ num_row <- nrow(merge_plot) / num_col
 
 # Introduction
 
-The CLT states that, as the sample size increases, the distribution of the sample mean approaches normal distribution—regardless of the shape of the original population distribution.
+The Central Limit Theorem states that, for a large enough sample size, the distribution of the sample mean becomes approximately normal—even if the population distribution is not—so long as the samples are independent and come from a population with finite variance.
 
-To demonstrate this, 3 different population (N = `{r} format(N, scientific = F)`) following `{r} glue_collapse(names(func), sep = ", ", last = " and ")` distribution were simulated and summary statistics computed @fig-population.
+To demonstrate this, 3 different population (N = `{r} format(N, scientific = F)`) following `{r} glue_collapse(names(func), sep = ", ", last = " and ")` distribution were simulated and summary statistics computed (@fig-population).
 
 ```{r}
-#| fig-cap: "Simulated populations and coresposnding summary statistics, μ - population statistics and σ - population standard deviation"
+#| fig-cap: "Simulated populations and coresposnding summary statistics, μ - population mean and σ - population standard deviation"
 #| label: fig-population
 #| fig-width: 7
 #| fig-height: 3
@@ -196,13 +196,11 @@ population_plot <- wrap_plots(
 print(population_plot)
 ```
 
-Next, repeated sampling was carried out from each population. For every distribution, `{r} nsample` samples were drawn at each of the following sizes: n = 3, 5, 10, and 20. For each sample, the mean was computed, and the resulting sampling distributions were visualized (Figure @fig-sampling). As the sample size increased, the distributions of sample means became increasingly normal, consistent with the Central Limit Theorem—even when the underlying populations were not normally distributed.
-
-Next, from each population sampling was performed and samples with `{r} glue_collapse(glue("n = {n}"), sep = ", ", last = " and ")` were drawn `{r} nsample` times and corresponsing statistics was computed
+From the simulated populations, repeated sampling was carried out. For every distribution, `{r} nsample` samples were drawn at each of the following sizes: n = 3, 5, 10, and 20. For each sample, the mean was computed, and the resulting sampling distributions were visualized (@fig-sampling).
 
 ```{r}
 #| classes: preview-image
-#| fig-cap: "Sampling from simulated populations for different samples size and 10000 iterations"
+#| fig-cap: "Distribution of simulated populations (top row): normal, right-skewed, and uniform. Each subsequent row shows the sampling distribution of the sample mean based on 1,000 samples drawn from the corresponding population. Sample sizes increase by row: second row: n = 3, third row: n = 5, fourth row: n = 10, and fifth row: n = 20. μ, population mean; μ ± σ, population standard deviation; x̄, sample mean ; x̄ ± S.E.M, standard error of the mean"
 #| label: fig-sampling
 #| fig-width: 7
 #| fig-height: 7
@@ -210,6 +208,7 @@ Next, from each population sampling was performed and samples with `{r} glue_col
 
 pfin <- wrap_plots(merge_plot$histogram, nrow = num_row, ncol = num_col, byrow = FALSE, guides = "collect") & theme(legend.position = "bottom")
 print(pfin)
+
 ```
 
 ```{r}
@@ -276,6 +275,10 @@ p3 <- df %>%
   gl
 
 ```
+
+As the sample size increased, the distributions of sample means became increasingly normal, consistent with the Central Limit Theorem—even when the underlying populations were not normally distributed.
+
+Next, from each population sampling was performed and samples with `{r} glue_collapse(glue("n = {n}"), sep = ", ", last = " and ")` were drawn `{r} nsample` times and corresponsing statistics was computed
 
 ```{r}
 #| fig-height: 8
