@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.5.57">
+<meta name="generator" content="quarto-1.6.39">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -38,10 +38,10 @@ ul.task-list li input[type="checkbox"] {
 <script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-e26003cea8cd680ca0c55a263523d882.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-f3c2ea88cadbcfb37ba28ffa2c97cfc1.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -168,10 +168,15 @@ ul.task-list li input[type="checkbox"] {
 
 
 
+<div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'patchwork' was built under R version 4.4.3</code></pre>
+</div>
+</div>
 <section id="introduction" class="level1">
 <h1>Introduction</h1>
-<p>The CLT states that, as the sample size increases, the distribution of the sample mean approaches normal distribution—regardless of the shape of the original population distribution.</p>
-<p>To demonstrate this, 3 different population (N = 100000) following normal, uniform and right-skewed distribution were simulated and summary statistics computed <a href="#fig-population" class="quarto-xref">Figure&nbsp;1</a>.</p>
+<p>The Central Limit Theorem states that, for a large enough sample size, the distribution of the sample mean becomes approximately normal—even if the population distribution is not—so long as the samples are independent and come from a population with finite variance.</p>
+<p>To demonstrate this, 3 different population (N = 100000) following normal, uniform and right-skewed distribution were simulated and summary statistics computed (<a href="#fig-population" class="quarto-xref">Figure&nbsp;1</a>).</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-population" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -180,14 +185,13 @@ ul.task-list li input[type="checkbox"] {
 <img src="index_files/figure-html/fig-population-1.png" class="img-fluid figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-population-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;1: Simulated populations and coresposnding summary statistics, μ - population statistics and σ - population standard deviation
+Figure&nbsp;1: Simulated populations and coresposnding summary statistics, μ - population mean and σ - population standard deviation
 </figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>Next, repeated sampling was carried out from each population. For every distribution, 1000 samples were drawn at each of the following sizes: n = 3, 5, 10, and 20. For each sample, the mean was computed, and the resulting sampling distributions were visualized (Figure <a href="#fig-sampling" class="quarto-xref">Figure&nbsp;2</a>). As the sample size increased, the distributions of sample means became increasingly normal, consistent with the Central Limit Theorem—even when the underlying populations were not normally distributed.</p>
-<p>Next, from each population sampling was performed and samples with n = 3, n = 5, n = 10 and n = 20 were drawn 1000 times and corresponsing statistics was computed</p>
+<p>From the simulated populations, repeated sampling was carried out. For every distribution, 1000 samples were drawn at each of the following sizes: n = 3, 5, 10, and 20. For each sample, the mean was computed, and the resulting sampling distributions were visualized (<a href="#fig-sampling" class="quarto-xref">Figure&nbsp;2</a>).</p>
 <div class="cell preview-image">
 <div class="cell-output-display">
 <div id="fig-sampling" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -196,12 +200,14 @@ Figure&nbsp;1: Simulated populations and coresposnding summary statistics, μ - 
 <img src="index_files/figure-html/fig-sampling-1.png" class="img-fluid figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sampling-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2: Sampling from simulated populations for different samples size and 10000 iterations
+Figure&nbsp;2: Distribution of simulated populations (top row): normal, right-skewed, and uniform. Each subsequent row shows the sampling distribution of the sample mean based on 1,000 samples drawn from the corresponding population. Sample sizes increase by row: second row: n = 3, third row: n = 5, fourth row: n = 10, and fifth row: n = 20. μ, population mean; μ ± σ, population standard deviation; x̄, sample mean ; x̄ ± S.E.M, standard error of the mean
 </figcaption>
 </figure>
 </div>
 </div>
 </div>
+<p>As the sample size increased, the distributions of sample means became increasingly normal, consistent with the Central Limit Theorem—even when the underlying populations were not normally distributed.</p>
+<p>Next, from each population sampling was performed and samples with n = 100 were drawn 1000 times and corresponsing statistics was computed</p>
 <div class="cell">
 <div class="cell-output-display">
 <div>
@@ -298,8 +304,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
   clipboard.on('success', onCopySuccess);
   if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-    // For code content inside modals, clipBoardJS needs to be initialized with a container option
-    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
     const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
       text: getTextToCopy,
       container: window.document.getElementById('quarto-embedded-source-code-modal')
@@ -410,7 +414,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (window.Quarto?.typesetMath) {
         window.Quarto.typesetMath(note);
       }
-      // TODO in 1.5, we should make sure this works without a callout special case
       if (note.classList.contains("callout")) {
         return note.outerHTML;
       } else {
