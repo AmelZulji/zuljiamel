@@ -1,0 +1,60 @@
+---
+author: Amel Zulji
+title: "water equilibrium"
+description: "water equilibrium"
+date: 2025.09.01
+categories:
+  - helper
+---
+
+## Water mixing
+
+Ubaci podaci ispod da izracunas koljiko **ladnija voda** (sobna temperatura ) i koljiko **toplija voda** (kljucanje) je potrebno da dobijes odguvarajuci volumen na odgovarajuca temperatura.
+
+:::: {#calculator style="max-width: 500px; margin: 1em 0;"}
+<label>Zeljenja krajna temperatura (°C):<br> <input type="number" id="t_final" value="47" min="30" max="70" step="0.5"> </label><br><br>
+
+<label>Sobna temperatura (°C):<br> <input type="number" id="t_cold" value="22" min="10" max="30" step="0.5"> </label><br><br>
+
+<label> Tacka kljucanja (°C):<br> <input type="number" id="t_hot" value="100" min="80" max="100" step="1"> </label><br><br>
+
+<label> Konacni Volume (mL):<br> <input type="number" id="v_total" value="90" min="30" max="300" step="1"> </label><br><br>
+
+<button onclick="calculateMix()">
+
+Izracunaj
+
+</button>
+
+::: {#result style="margin-top: 1.5em; font-size: 1.1em;"}
+:::
+::::
+
+```{=html}
+<script>
+function calculateMix() {
+  const T_final = parseFloat(document.getElementById("t_final").value);
+  const T_cold  = parseFloat(document.getElementById("t_cold").value);
+  const T_hot   = parseFloat(document.getElementById("t_hot").value);
+  const V_total = parseFloat(document.getElementById("v_total").value);
+
+  if (T_hot === T_cold) {
+    document.getElementById("result").innerHTML = "Error: Room and boiling temperatures are the same.";
+    return;
+  }
+
+  const V_cold = V_total * (T_hot - T_final) / (T_hot - T_cold);
+  const V_hot = V_total - V_cold;
+
+  if (V_cold < 0 || V_hot < 0) {
+    document.getElementById("result").innerHTML = "⚠️ Invalid temperature combination. Try adjusting values.";
+    return;
+  }
+
+  document.getElementById("result").innerHTML =
+    `<strong>To get ${V_total} mL at ${T_final} °C:</strong><br><br>` +
+    `• Add <strong>${V_cold.toFixed(1)} mL</strong> of room temperature water (${T_cold} °C)<br>` +
+    `• Then add <strong>${V_hot.toFixed(1)} mL</strong> of boiling water (${T_hot} °C)`;
+}
+</script>
+```
