@@ -157,7 +157,7 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#water-mixing-calculator" id="toc-water-mixing-calculator" class="nav-link active" data-scroll-target="#water-mixing-calculator">💧 Water Mixing Calculator</a></li>
+  <li><a href="#water-mixing" id="toc-water-mixing" class="nav-link active" data-scroll-target="#water-mixing">Water mixing</a></li>
   </ul>
 </nav>
     </div>
@@ -168,16 +168,16 @@ ul.task-list li input[type="checkbox"] {
 
 
 
-<section id="water-mixing-calculator" class="level2">
-<h2 class="anchored" data-anchor-id="water-mixing-calculator">💧 Water Mixing Calculator</h2>
-<p>This tool calculates how much <strong>cold</strong> (room temperature) and <strong>hot</strong> (boiling) water you need to mix to reach a desired final temperature and total volume.</p>
+<section id="water-mixing" class="level2">
+<h2 class="anchored" data-anchor-id="water-mixing">Water mixing</h2>
+<p>Ubaci podaci ispod da izracunas koljiko <strong>ladnija voda</strong> (sobna temperatura ) i koljiko <strong>toplija voda</strong> (kljucanje) je potrebno da dobijes odguvarajuci volumen na odgovarajuca temperatura.</p>
 <div id="calculator" style="max-width: 500px; margin: 1em 0;">
-<p><label>Desired Final Temperature (°C):<br> <input type="number" id="t_final" value="47" min="30" max="70" step="0.5"> </label><br><br></p>
-<p><label>Room Temperature (°C):<br> <input type="number" id="t_cold" value="22" min="10" max="30" step="0.5"> </label><br><br></p>
-<p><label>Boiling Water Temperature (°C):<br> <input type="number" id="t_hot" value="100" min="80" max="100" step="1"> </label><br><br></p>
-<p><label>Total Volume (mL):<br> <input type="number" id="v_total" value="90" min="30" max="300" step="1"> </label><br><br></p>
+<p><label>Zeljenja krajna temperatura (°C):<br> <input type="number" id="t_final" value="47" min="30" max="70" step="0.5"> </label><br><br></p>
+<p><label>Sobna temperatura (°C):<br> <input type="number" id="t_cold" value="22" min="10" max="30" step="0.5"> </label><br><br></p>
+<p><label> Tacka kljucanja (°C):<br> <input type="number" id="t_hot" value="100" min="80" max="100" step="1"> </label><br><br></p>
+<p><label> Konacni Volume (mL):<br> <input type="number" id="v_total" value="90" min="30" max="300" step="1"> </label><br><br></p>
 <button onclick="calculateMix()">
-<p>Calculate</p>
+<p>Izracunaj</p>
 </button>
 <div id="result" style="margin-top: 1.5em; font-size: 1.1em;">
 
