@@ -4,7 +4,7 @@
     "href": "posts.html",
     "title": "Blog",
     "section": "",
-    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n         \n          Author\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n\n\n\n\n\n\nCentral Limit Theorem\n\n\n\n\n\n\nstatistics\n\n\n\nSimulation-based explanation of the Central Limit Theorem (CLT) and its implications\n\n\n\n\n\nMay 2, 2023\n\n\nAmel Zulji\n\n\n\n\n\n\n\n\n\n\n\n\nTest blog\n\n\n\n\n\nSimple test to check if blog is properly set\n\n\n\n\n\nDec 20, 2020\n\n\nAmel Zulji\n\n\n\n\n\n\n\n\n\n\n\n\nWater Mixing Calculator\n\n\n\n\n\nSimple test to check if blog is properly set\n\n\n\n\n\nDec 20, 2020\n\n\nAmel Zulji\n\n\n\n\n\n\nNo matching items"
+    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n         \n          Author\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n\n\n\n\n\n\nwater equilibrium\n\n\n\n\n\n\nhelper\n\n\n\nwater equilibrium\n\n\n\n\n\nSep 1, 2025\n\n\nAmel Zulji\n\n\n\n\n\n\n\n\n\n\n\n\nCentral Limit Theorem\n\n\n\n\n\n\nstatistics\n\n\n\nSimulation-based explanation of the Central Limit Theorem (CLT) and its implications\n\n\n\n\n\nMay 2, 2023\n\n\nAmel Zulji\n\n\n\n\n\n\n\n\n\n\n\n\nTest blog\n\n\n\n\n\nSimple test to check if blog is properly set\n\n\n\n\n\nDec 20, 2020\n\n\nAmel Zulji\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "index.html",
@@ -30,15 +30,15 @@
   {
     "objectID": "posts/20250901_water_temp_equilibrium/index.html",
     "href": "posts/20250901_water_temp_equilibrium/index.html",
-    "title": "Water Mixing Calculator",
+    "title": "water equilibrium",
     "section": "",
-    "text": "This tool calculates how much cold (room temperature) and hot (boiling) water you need to mix to reach a desired final temperature and total volume.\n\nDesired Final Temperature (°C):  \nRoom Temperature (°C):  \nBoiling Water Temperature (°C):  \nTotal Volume (mL):  \nCalculate"
+    "text": "This tool calculates how much cold (room temperature) and hot (boiling) water you need to mix to reach a desired final temperature and total volume.\n\nDesired Final Temperature (°C):  \nRoom Temperature (°C):  \nBoiling Water Temperature (°C):  \nTotal Volume (mL):  \n\nCalculate"
   },
   {
     "objectID": "posts/20250901_water_temp_equilibrium/index.html#water-mixing-calculator",
     "href": "posts/20250901_water_temp_equilibrium/index.html#water-mixing-calculator",
-    "title": "Water Mixing Calculator",
+    "title": "water equilibrium",
     "section": "",
-    "text": "This tool calculates how much cold (room temperature) and hot (boiling) water you need to mix to reach a desired final temperature and total volume.\n\nDesired Final Temperature (°C):  \nRoom Temperature (°C):  \nBoiling Water Temperature (°C):  \nTotal Volume (mL):  \nCalculate"
+    "text": "This tool calculates how much cold (room temperature) and hot (boiling) water you need to mix to reach a desired final temperature and total volume.\n\nDesired Final Temperature (°C):  \nRoom Temperature (°C):  \nBoiling Water Temperature (°C):  \nTotal Volume (mL):  \n\nCalculate"
   }
 ]
