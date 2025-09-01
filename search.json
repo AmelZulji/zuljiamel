@@ -4,14 +4,14 @@
     "href": "posts.html",
     "title": "Blog",
     "section": "",
-    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n         \n          Author\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n\n\n\n\n\n\nCentral Limit Theorem\n\n\n\n\n\n\nstatistics\n\n\n\nSimulation-based explanation of the Central Limit Theorem (CLT) and its implications\n\n\n\n\n\nMay 2, 2023\n\n\nAmel Zulji\n\n\n\n\n\n\n\n\n\n\n\n\nTest blog\n\n\n\n\n\nSimple test to check if blog is properly set\n\n\n\n\n\nDec 20, 2020\n\n\nAmel Zulji\n\n\n\n\n\n\nNo matching items"
+    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n         \n          Author\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n\n\n\n\n\n\nCentral Limit Theorem\n\n\n\n\n\n\nstatistics\n\n\n\nSimulation-based explanation of the Central Limit Theorem (CLT) and its implications\n\n\n\n\n\nMay 2, 2023\n\n\nAmel Zulji\n\n\n\n\n\n\n\n\n\n\n\n\nTest blog\n\n\n\n\n\nSimple test to check if blog is properly set\n\n\n\n\n\nDec 20, 2020\n\n\nAmel Zulji\n\n\n\n\n\n\n\n\n\n\n\n\nWater Mixing Calculator\n\n\n\n\n\nSimple test to check if blog is properly set\n\n\n\n\n\nDec 20, 2020\n\n\nAmel Zulji\n\n\n\n\n\n\nNo matching items"
   },
   {
-    "objectID": "posts/20250104_function_derivatives/index.html",
-    "href": "posts/20250104_function_derivatives/index.html",
-    "title": "Central Limit Theorem",
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Amel Zulji",
     "section": "",
-    "text": "Warning: package 'patchwork' was built under R version 4.4.3\n\n\n\nIntroduction\nThe Central Limit Theorem states that, for a large enough sample size, the distribution of the sample mean becomes approximately normal—even if the population distribution is not—so long as the samples are independent and come from a population with finite variance.\nTo demonstrate this, 3 different population (N = 100000) following normal, uniform and right-skewed distribution were simulated and summary statistics computed (Figure 1).\n\n\n\n\n\n\n\n\nFigure 1: Simulated populations and coresposnding summary statistics, μ - population mean and σ - population standard deviation\n\n\n\n\n\nFrom the simulated populations, repeated sampling was carried out. For every distribution, 1000 samples were drawn at each of the following sizes: n = 3, 5, 10, and 20. For each sample, the mean was computed, and the resulting sampling distributions were visualized (Figure 2).\n\n\n\n\n\n\n\n\nFigure 2: Distribution of simulated populations (top row): normal, right-skewed, and uniform. Each subsequent row shows the sampling distribution of the sample mean based on 1,000 samples drawn from the corresponding population. Sample sizes increase by row: second row: n = 3, third row: n = 5, fourth row: n = 10, and fifth row: n = 20. μ, population mean; μ ± σ, population standard deviation; x̄, sample mean ; x̄ ± S.E.M, standard error of the mean\n\n\n\n\n\nAs the sample size increased, the distributions of sample means became increasingly normal, consistent with the Central Limit Theorem—even when the underlying populations were not normally distributed.\nNext, from each population sampling was performed and samples with n = 100 were drawn 1000 times and corresponsing statistics was computed"
+    "text": "put text here"
   },
   {
     "objectID": "posts/20241222_test_blog/index.html",
@@ -21,10 +21,24 @@
     "text": "suppressPackageStartupMessages({\n  library(ggplot2, warn.conflicts = FALSE)\n})\n\n\nggplot() + \n  annotate(\n  \"text\",\n  x = 4,\n  y = 25,\n  label = \"Test blog\",\n  size = 25\n)"
   },
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Amel Zulji",
+    "objectID": "posts/20250104_function_derivatives/index.html",
+    "href": "posts/20250104_function_derivatives/index.html",
+    "title": "Central Limit Theorem",
     "section": "",
-    "text": "put text here"
+    "text": "Warning: package 'patchwork' was built under R version 4.4.3\n\n\n\nIntroduction\nThe Central Limit Theorem states that, for a large enough sample size, the distribution of the sample mean becomes approximately normal—even if the population distribution is not—so long as the samples are independent and come from a population with finite variance.\nTo demonstrate this, 3 different population (N = 100000) following normal, uniform and right-skewed distribution were simulated and summary statistics computed (Figure 1).\n\n\n\n\n\n\n\n\nFigure 1: Simulated populations and coresposnding summary statistics, μ - population mean and σ - population standard deviation\n\n\n\n\n\nFrom the simulated populations, repeated sampling was carried out. For every distribution, 1000 samples were drawn at each of the following sizes: n = 3, 5, 10, and 20. For each sample, the mean was computed, and the resulting sampling distributions were visualized (Figure 2).\n\n\n\n\n\n\n\n\nFigure 2: Distribution of simulated populations (top row): normal, right-skewed, and uniform. Each subsequent row shows the sampling distribution of the sample mean based on 1,000 samples drawn from the corresponding population. Sample sizes increase by row: second row: n = 3, third row: n = 5, fourth row: n = 10, and fifth row: n = 20. μ, population mean; μ ± σ, population standard deviation; x̄, sample mean ; x̄ ± S.E.M, standard error of the mean\n\n\n\n\n\nAs the sample size increased, the distributions of sample means became increasingly normal, consistent with the Central Limit Theorem—even when the underlying populations were not normally distributed.\nNext, from each population sampling was performed and samples with n = 100 were drawn 1000 times and corresponsing statistics was computed"
+  },
+  {
+    "objectID": "posts/20250901_water_temp_equilibrium/index.html",
+    "href": "posts/20250901_water_temp_equilibrium/index.html",
+    "title": "Water Mixing Calculator",
+    "section": "",
+    "text": "This tool calculates how much cold (room temperature) and hot (boiling) water you need to mix to reach a desired final temperature and total volume.\n\nDesired Final Temperature (°C):  \nRoom Temperature (°C):  \nBoiling Water Temperature (°C):  \nTotal Volume (mL):  \nCalculate"
+  },
+  {
+    "objectID": "posts/20250901_water_temp_equilibrium/index.html#water-mixing-calculator",
+    "href": "posts/20250901_water_temp_equilibrium/index.html#water-mixing-calculator",
+    "title": "Water Mixing Calculator",
+    "section": "",
+    "text": "This tool calculates how much cold (room temperature) and hot (boiling) water you need to mix to reach a desired final temperature and total volume.\n\nDesired Final Temperature (°C):  \nRoom Temperature (°C):  \nBoiling Water Temperature (°C):  \nTotal Volume (mL):  \nCalculate"
   }
 ]
