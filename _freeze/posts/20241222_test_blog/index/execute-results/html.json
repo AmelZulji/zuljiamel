@@ -1,8 +1,7 @@
 {
-  "hash": "5e8fb6a09979fd8a74a2aa7ce5761525",
+  "hash": "989a907f978e6e0e176ba6e39b2f3a51",
   "result": {
-    "engine": "knitr",
-    "markdown": "---\ntitle: \"Test blog\"\nauthor: \"Amel Zulji\"\ndescription: \"Simple test to check if blog is properly set\"\ndate: 2020.12.20\nimage: true\n---\n\n::: {.cell}\n\n```{.r .cell-code}\nsuppressPackageStartupMessages({\n  library(ggplot2, warn.conflicts = FALSE)\n})\n```\n:::\n\n::: {.cell .preview-image}\n\n```{.r .cell-code}\nggplot() + \n  annotate(\n  \"text\",\n  x = 4,\n  y = 25,\n  label = \"Test blog\",\n  size = 25\n)\n```\n\n::: {.cell-output-display}\n![](index_files/figure-html/unnamed-chunk-2-1.png){width=672}\n:::\n:::\n",
+    "markdown": "---\ntitle: \"Test blog\"\nauthor: \"Amel Zulji\"\ndescription: \"Simple test to check if blog is properly set\"\ndate: 2020.12.20\n---\n\n::: {.cell}\n\n```{.r .cell-code}\nsuppressPackageStartupMessages({\n  library(ggplot2, warn.conflicts = FALSE)\n})\n```\n:::\n\n::: {.cell .preview-image}\n\n```{.r .cell-code}\nggplot() + \n  annotate(\n  \"text\",\n  x = 4,\n  y = 25,\n  label = \"Test blog\",\n  size = 25\n)\n```\n\n::: {.cell-output-display}\n![](index_files/figure-html/unnamed-chunk-2-1.png){width=672}\n:::\n:::\n",
     "supporting": [
       "index_files"
     ],

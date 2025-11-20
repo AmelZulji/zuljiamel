@@ -3,7 +3,6 @@ title: "Test blog"
 author: "Amel Zulji"
 description: "Simple test to check if blog is properly set"
 date: 2020.12.20
-image: true
 ---
 
 ```{r}
