@@ -1,0 +1,328 @@
+---
+author: Amel Zulji
+title: "Hypothesis testing"
+description: "Understending the logic of hypothesis testing"
+categories:
+  - statistics
+execute: 
+  echo: false
+---
+
+```{r}
+
+set.seed(123)
+
+suppressPackageStartupMessages({
+  library(tidyverse)
+  library(scales)
+  library(patchwork)
+  library(BSDA)
+})
+
+# define new geom 
+StatDensityShade <- ggproto(
+  "StatDensityShade",
+  Stat,
+  compute_group = function(data, scales) {
+    dens <- density(data$x)
+    mu <- mean(data$x)
+    sigma <- sd(data$x)
+
+    df <- data.frame(x = dens$x, y = dens$y)
+    df_shade <- df[df$x >= (mu - sigma) & df$x <= (mu + sigma), ]
+
+    df_shade <- rbind(c(min(df_shade$x), 0), df_shade, c(max(df_shade$x), 0))
+    return(df_shade)
+  },
+  required_aes = c("x")
+)
+
+StatDensityMean <- ggproto(
+  "StatDensityMean",
+  Stat,
+  compute_group = function(data, scales) {
+    dens <- density(data$x)
+    mu <- mean(data$x)
+    y_height <- approx(dens$x, dens$y, xout = mu)$y
+    data.frame(x = mu, xend = mu, y = 0, yend = y_height)
+  },
+  required_aes = c("x")
+)
+
+geom_density_sigma <- function(
+  fill_color = "skyblue",
+  line_color = "red",
+  fill_label = "mu %+-% sigma",
+  line_label = "mu",
+  line_type = "solid",
+  alpha = 0.5,
+  ...
+) {
+  list(
+    geom_polygon(
+      stat = StatDensityShade,
+      aes(fill = fill_label),
+      alpha = alpha
+    ),
+
+    geom_density(fill = NA, linewidth = 0.7, ...),
+
+    geom_segment(
+      stat = StatDensityMean,
+      aes(color = line_label),
+      linetype = line_type,
+      linewidth = 0.7
+    ),
+    scale_fill_manual(
+      name = "Spread",
+      values = setNames(fill_color, fill_label),
+      labels = scales::label_parse()
+    ),
+    scale_color_manual(
+      name = "Centrality",
+      values = setNames(line_color, line_label),
+      labels = scales::label_parse()
+    )
+  )
+}
+```
+
+# The logic of hypothesis testing
+
+Hypothesis testing is effectively a signal-to-noise problem. When a difference (signal) is observed, the question is how probable it is that the difference (signal) is due to the random variation (noise)?
+
+To answer that question different statistical tests are used. Based on the assumaptions that these tests make about the data they are divided into:
+
+-   Parametric tests assume the data follows a specific probability distribution (usually the normal distribution) and rely on population parameters like the mean and standard deviation. They are generally more powerful but stricter.
+
+-   Non-parametric tests make no assumptions about the data's distribution. They rely on the median or ranks of the data rather than raw values. They are more flexible but slightly less powerful.
+
+# Parametric tests
+
+## Z test
+
+Z test is used to compare means between sample and population (1-sample Z test) or between 2 samples (2-sample Z test). It requires that the population parameters are known (which is rare) and therefore it is commonly used for example in production to monitor consistency.
+
+::: callout-important
+Following assumptions should be satisfied in order for Z test to give reliable results:
+
+-   Normality
+    -   Either big sample n \> 30 (normality is assured by CLT)
+    -   Or underlying population should be normal (in that case sampling distribution is also normal regardless of the sample size)
+-   Known population parameters ($\sigma$, $\mu$)
+-   Continuous data
+-   Independent and random samples
+:::
+
+### 1 sample z test
+
+```{r}
+mu <- 50
+sigma <- 1
+
+n <- 100
+sample <- rnorm(n,50.1692,sigma)
+xbar <- mean(sample)
+sem <- sigma/sqrt(n)
+
+```
+
+**Question:** A company that produces chocolate bars established a new production line. They produced first batch of `r n` bars and measured average mass of `r xbar`g. Using data from other production lines they calculated that the average mass of bars is `r mu`g with standard deviation of `r sigma`g. Now they ask the question whether new production line is running as expected?
+
+**Hypothesis:** The bars are of the same mass.
+
+**Hypothesis test:** To test the hypothesis one sample Z test can be used. The test first computes the Z statistic (it measures how many standard errors is the mean of the group away from the population mean) and then calculates probability of observing the same or more extreme Z statistic under the null distribution. The formula for calculating the Z statistic is:
+
+$$
+Z = \frac{\bar{X} - \mu}{\frac{\sigma}{\sqrt{n}}}
+$$ {#eq-Z-statistic}
+
+where $\bar{X}$ is the sample mean (`r xbar`g), $\mu$ is population mean (`r mu`g), $\sigma$ is population standard deviation (`r sigma`g) and $n$ is the number of observations in a sample (`r n`).
+
+::: callout-note
+In the @eq-Z-statistic the denominator is $\frac{\sigma}{\sqrt{n}}$ which is effectively the formula for calculating standard error of the mean (SEM)
+:::
+
+```{r}
+Z <- (xbar - mu) / (sigma / sqrt(100))
+```
+
+Plugging in the numbers in the formula, the value of Z statistic is obtained Z = `r Z`.
+
+The next step is calculating the probability of observing the same or more extreme Z statistic. It is calculated as area under the curve for specific interval. In particular, the question is what is the area of the blue segment in the @fig-area
+
+```{r}
+#| label: fig-area
+#| fig-cap: Z distribution for one sided 
+
+ggplot(data.frame(x = c(-4, 4)), aes(x = x)) +
+  stat_function(fun = dnorm, linewidth = 0.7) +
+  stat_function(fun = dnorm, geom = "area", xlim = c(sign(Z)*4, Z), fill = "skyblue") +
+  scale_x_continuous(
+    name = NULL,
+    breaks = \(x) {vec <- c(Z, scales::breaks_extended()(x)); vec[-which(vec == 2)]},
+    labels = \(x) str_glue('{ifelse(x == Z, paste0(x,"\nZ"), x)}')
+  ) +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank())
+```
+
+The area under the curve can be calculated with `pnorm()` function (for normally distributed)
+
+```{r}
+area <- 1 - pnorm(abs(Z))
+```
+
+So the area of the blue segment is `r area` . In fact this area is the p value. Given that it is bellow 0.05, the company concludes that something is off and they are producing heavier bars which will leads to money loss.
+
+However, this only tested whether company is producing heavier bars which would lead to money loss (this is one sided one sample Z test). But, if they produce lighter bars the company will loose the costumers which would be even bigger loss, therefore the test needs to account for boths heavier and lighter bars. To test that the area of the both blue segments @fig-2area
+
+```{r}
+#| label: fig-2area
+#| fig-cap: Z distribution 2
+
+ggplot(data.frame(x = c(-4, 4)), aes(x = x)) +
+  stat_function(fun = dnorm, linewidth = 0.7) +
+  stat_function(
+    fun = dnorm,
+    geom = "area",
+    xlim = c(sign(Z) * 4, sign(Z) * Z),
+    fill = "skyblue"
+  ) +
+  stat_function(
+    fun = dnorm,
+    geom = "area",
+    xlim = c(-sign(Z) * 4, -sign(Z) * Z),
+    fill = "skyblue"
+  ) +
+  scale_x_continuous(
+    name = NULL,
+    breaks = \(x) {vec <- c(Z, scales::breaks_extended()(x)); vec[-which(vec == 2)]},
+    labels = \(x) str_glue('{ifelse(x == Z, paste0(x,"\nZ"), x)}')
+  ) +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank())
+```
+
+```{r}
+area <- 2 * (1 - pnorm(abs(Z)))
+```
+
+Now the area is `r area` and since that is above the 0.05 the company can rest assured that everything is running smooth and nothing needs to be adjusted.
+
+```{r}
+
+res_1side <- z.test(
+  x = rnorm(n = 100, mean = xbar, sd = 1),
+  mu = mu,
+  alternative = "greater",
+  sigma.x = 1
+)
+
+
+res_2side <- z.test(
+  x = rnorm(n = 100, mean = xbar, sd = 1),
+  mu = mu,
+  alternative = "two.sided",
+  sigma.x = 1
+)
+```
+
+### One-sample Z test
+
+A one-sample Z test measures the probability of observing a sample mean as extreme or more extreme than the observed one under the sampling distribution of the mean, assuming the null hypothesis is true.
+
+::: callout-important
+Assumptions:
+
+1.  Samples are independent and random.
+2.  Sampling distribution of the mean follows normal distribution.
+3.  Population standard deviation $\sigma$ is known.
+:::
+
+```{r}
+mu <- 50
+sigma <- 1
+
+n <- 46
+sample <- rnorm(n,50.1692,sigma)
+xbar <- mean(sample)
+sem <- sigma/sqrt(n)
+
+sim_n <- c(3,9,27) |> set_names(~paste("n =", .))
+```
+
+**Scenario:** A company establishes a new production line for chocolate bars with a target mass of `r mu`g. To verify the process, they produce a first batch of `r n` bars and measure an average mass of `r xbar`g. Given that they know from historical data that their equipment has a standard deviation of `r sigma`g, they want to determine: Is the new production line performing as expected, or is it significantly off-target?
+
+So as stated above the task is to measure the probability of observing a mean equally or more extreme than in the sampling distirbution of `r mu`. So first lets see what is sampling distirbution of the mean arounf the target `r mu`. The sampling distribution is the distribution of the sample mean (i.e. we take 1000 samples of size n, compute mean for each and that distribution is considered sampling mean). If the mean is calculated from those mean it is mean of the mean and denoted as $\mu_\bar{x}$ and the standard deviation of these means is known as standard error of the mean (SEM) and denoted with $\sigma_\bar{x}$. So we will start by taking 1000 samples of n = 30 and see the distirbution with labeled centrality mu and spread SEM.
+
+```{r}
+sample_means <- map(
+  sim_n,
+  \(x) {
+    replicate(
+      1000,
+      sample(rnorm(x, mu, sigma)) |> mean()
+    ) |>
+      enframe(name = NULL)
+  }
+) |>
+  list_rbind(names_to = "n") |>
+  mutate(n = fct_inorder(n))
+
+sample_means |>
+  ggplot(aes(x = value)) +
+  geom_density_sigma(
+    fill_label = "mu[bar(x)] %+-% sigma[bar(x)]",
+    fill_color = "lightblue",
+    line_label = "mu[bar(x)]",
+    line_type = "2222"
+  ) +
+  ggtitle("Sampling distirbution of the mean") +
+  theme_bw() +
+  facet_grid(rows = vars(n))
+```
+
+Notice how the SEM is shrinking with increasing n. so to
+
+```{r}
+smean <- map(
+  2:100,
+  \(x) {
+    replicate(n = 100, sample(rnorm(x, mu, sigma), size = x) |> mean()) |>
+      enframe(name = NULL)
+  }
+) |>
+  list_rbind(names_to = "n")
+
+ssem <- smean |> summarise(.by = n, sem = sd(value))
+ssem |>
+  ggplot(aes(x = n, y = sem)) +
+  geom_point() +
+  stat_function(
+    fun = \(x) sigma / sqrt(x),
+    geom = "line",
+    aes(linetype = "sigma/sqrt(n)"), 
+    color = "red",
+    linewidth = 1
+  ) + 
+  scale_linetype_manual(name = NULL, values = c("sigma/sqrt(n)" = "solid"), labels = scales::label_parse()) + 
+  theme_bw()
+
+```
+
+**Question:** A company that produces chocolate bars established a new production line. In this production line they want to produce bars with a mass of `r mu`g. They produced first batch of `r n` bars and measured average mass of `r xbar`g. Given that they know their equipment has a variation of `r sigma`g, they are wondering whether the production line is perfomring as expected and producing bars at correct mass.
+
+**Question:** A company that produces chocolate bars established a new production line. They produced first batch of `r n` bars and measured average mass of `r xbar`g. Using data from other production lines they calculated that the average mass of bars is `r mu`g with standard deviation of `r sigma`g. Now they ask the question whether new production line is running as expected?
+
+**Hypothesis:** The bars are of the same mass.
+
+**Hypothesis test:** To test the hypothesis one sample Z test can be used. The test first computes the Z statistic (it measures how many standard errors is the mean of the group away from the population mean) and then calculates probability of observing the same or more extreme Z statistic under the null distribution. The formula for calculating the Z statistic is:
+
+$$
+Z = \frac{\bar{X} - \mu}{\frac{\sigma}{\sqrt{n}}}
+$$
+
+where $\bar{X}$ is the sample mean (`r xbar`g), $\mu$ is population mean (`r mu`g), $\sigma$ is population standard deviation (`r sigma`g) and $n$ is the number of observations in a sample (`r n`).
+
+To demonstrate imagine a factory producing chocolate bars. Their equipment produces
