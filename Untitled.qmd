@@ -1,187 +1,107 @@
 ---
-title: "Untitled"
+author: Amel Zulji
+title: "Sampling and central limit theorem"
+description: "Central limit theorem and its implications"
+categories:
+  - statistics
+execute: 
+  echo: false
 ---
 
 ```{r}
 #| echo: false
+
+set.seed(12345)
+
 suppressPackageStartupMessages({
   library(tidyverse)
   library(scales)
   library(patchwork)
-})
-```
-
-## The logic of hypothesis testing
-
-Hypothesis testing is effectively a signal-to-noise problem. When a difference (signal) is observed, one must decide how probable it is that this difference is meaningful versus merely the result of random variation (noise).
-
-Imagine a company launches a new chocolate product. They claim the mass of their product is 50g $\pm$ 1g. What that means is that the average mass of their chocolate This means they claim the average mass is 50g, but due to machine imperfection, individual bars fluctuate. Some might be 49.2g, others 50.8g. This fluctuation is considered noise in our example and in statistics is known as standard deviation ($\sigma$).
-
-Now, suppose we buy a chocolate bar and measure its mass at 51.7g.The difference ($51.7 - 50 = 1.7$g) is the signal we observe.The critical question is: How probable is it that this signal is simply due to variability in chocolate mass (noise)? To quantify this probability, we introduce the Probability Density Function (PDF). This curve serves as a "map" of the noise, showing us exactly how likely different fluctuations are.
-
-```{r}
-# Parameters
-suppressPackageStartupMessages({
-  library(tidyverse)
-  library(scales)
+  library(eurostat)
 })
 
-mu <- 50
-sigma <- 1
+source("helpers/geom_analysis.R")
 
-# Create data for the curve
-plot_data <- tibble(
-  x = seq(mu - 4 * sigma, mu + 4 * sigma, length.out = 1000),
-  y = dnorm(x, mean = mu, sd = sigma)
+theme_set(
+  theme_bw() + 
+    theme(
+      plot.title = element_text(hjust = 0.5, face = "bold"),
+      plot.tag = element_text(size = 16, face = "bold")
+      )
 )
 
-# Custom Label Function: Stacks IQ on top of Sigma
-dual_label <- function(x) {
-  # Calculate Z-score (Sigma)
-  z <- (x - mu) / sigma
-  
-  # Format the Sigma string (e.g., "+1σ")
-  sigma_str <- paste0(ifelse(z > 0, "+", ""), z, "\u03C3") # \u03C3 is sigma symbol
-  sigma_str[z == 0] <- "\u03BC" # Use mu symbol for 0
-  
-  # Return: "IQ \n Sigma"
-  paste0(x, "\n", sigma_str)
-}
-
-ggplot(plot_data, aes(x = x, y = y)) +
-  geom_area(
-    data = filter(plot_data, x >= mu - 3 * sigma & x <= mu + 3 * sigma),
-    fill = "#DEEBF7"
-  ) +
-  geom_area(
-    data = filter(plot_data, x >= mu - 2 * sigma & x <= mu + 2 * sigma),
-    fill = "#9ECAE1"
-  ) +
-  geom_area(
-    data = filter(plot_data, x >= mu - 1 * sigma & x <= mu + 1 * sigma),
-    fill = "#4292C6"
-  ) +
-  geom_line(linewidth = 1) +
-  scale_x_continuous(
-    name = "IQ",
-    breaks = seq(46, 54, 1),
-    labels = dual_label # Apply our custom stacker
-  ) +
-  scale_y_continuous(
-    "Probability density",
-    expand = expansion(mult = c(0, 0.01))
-  ) +
-  
-  theme_bw() +
-  theme(
-    axis.text.x = element_text(size = 11, lineheight = 1.2),
-    axis.title.x = element_text(margin = margin(t = 15)),
-    axis.line.y = element_blank(),
-    axis.ticks.y = element_blank()
-  )
-
 ```
 
-The **Z-test** is the foundational model for this process. While rarely used in practice (because it requires knowing the population variance), it is pretty good to understand how we map raw data onto probability distributions.
+# Sampling fundamentals
 
-### The scenario
+To understand sampling, lets first define population, its distribution, and its parameters.
 
-Imagine we measure the IQ of 30 students who competed in a Math Olympiad.
+### The population
 
--   **Observed sample mean (**$\bar{x}$): 118.5
+A population is the complete set of all possible observations for a specific variable of interest. It represents the ground truth for the variable of interest. For example, the height (variable of interest) of all male humans (all possible observations) would represent a population.
 
--   **Sample size (**$n$): 30
+### 2. Probability density function and population distribution
 
-We assume the parameters for the general human population are known facts:
+If we consider the heights of all adult males, we notice that different heights occur with different frequencies. For example, a randomly selected male is much more likely to be 180 cm tall than 220 cm.
 
--   **Population mean (**$\mu$): 110
+This means the population is "denser" around 180 cm - there are significantly more individuals with a height around 180 cm than eg around 220 cm.
 
--   **Population SD (**$\sigma$): 15
-
-**Research question:** Is there sufficient evidence to conclude that these students differ significantly from the general population?
-
-### Assumptions
-
--   **Continuous data:** The dependent variable is continuous.
-
--   **Independence:** Observations are independent.
-
--   **Normality:** The sampling distribution is normal (satisfied by CLT as $n=30$).
-
--   **Known variance:** The population $\sigma$ is known.
-
-### 1. Visualizing the mechanism
-
-To test the hypothesis, we must compare our sample against the "Null distribution."
-
-Crucially, we do not test against the distribution of *individuals* (Population). We test against the distribution of *means* (Sampling Distribution). The Z-test relies on the fact that the Sampling Distribution is much narrower than the Population, making it sensitive to deviations.
+The Probability Density Function (PDF) mathematically defines this density. Plotting the density as a function of height provides a continuous representation of the population's distribution, showing us instantly where the "mass" of the population lies. (@fig-heigh-and-income)
 
 ```{r}
-#| label: mechanism-plot
-#| fig-height: 6
-#| fig-width: 8
-#| echo: false
+#| label: fig-heigh-and-income
+#| warning: false
+#| fig-cap: Distribution of human male heights (a) and Personal income (b)
 
-# Parameters
-mu_pop    <- 110
-sigma_pop <- 15
-x_bar     <- 118.5
-n         <- 30
-sem       <- sigma_pop / sqrt(n)
-common_xlim <- c(60, 160)
+N <- 10000
+pop1_name <- "Human male height"
+pop1_unit <- "cm"
+pop1_mu <- 175
+pop1_sigma <- 10
+pop1 <- rnorm(N, pop1_mu, pop1_sigma) |> enframe(name = NULL)
+pop1_p <- pop1 |>
+  ggplot(aes(x = value)) +
+  geom_density() +
+  scale_x_continuous(name = str_glue("{pop1_name} / {pop1_unit}"))
 
-# PLOT A: POPULATION (Individuals)
-p1 <- ggplot(data = tibble(x = common_xlim), aes(x = x)) +
-  stat_function(fun = dnorm, args = list(mean = mu_pop, sd = sigma_pop)) +
-  
-  # Shade 1 SD spread
-  stat_function(fun = dnorm, args = list(mean = mu_pop, sd = sigma_pop),
-                xlim = c(mu_pop - sigma_pop, mu_pop + sigma_pop),
-                geom = "area", aes(fill = "1 SD spread"), alpha = 0.5) +
-  
-  geom_vline(xintercept = x_bar, color = "blue", linewidth = 0.8) +
-  
-  scale_fill_manual(name = NULL, values = c("1 SD spread" = "gray80")) +
-  theme_classic() +
-  labs(title = "1. Population distribution (Individuals)",
-       subtitle = "Wide variance (Sigma = 15). An individual IQ of 118.5 is common.",
-       y = "Density", x = NULL) +
-  coord_cartesian(xlim = common_xlim)
+pop2_stat <- get_eurostat("ilc_di03", time_format = "date") |>
+  filter(
+    geo == "DE",
+    age == "TOTAL",
+    sex == "T",
+    TIME_PERIOD == "2024-01-01",
+    unit == "EUR"
+  ) |>
+  select(indic_il, values) |>
+  deframe()
 
-# PLOT B: SAMPLING DISTRIBUTION (Means)
-p2 <- ggplot(data = tibble(x = common_xlim), aes(x = x)) +
-  stat_function(fun = dnorm, args = list(mean = mu_pop, sd = sem)) +
-  
-  # Shade P-value region
-  stat_function(fun = dnorm, args = list(mean = mu_pop, sd = sem),
-                xlim = c(x_bar, 160),
-                geom = "area", aes(fill = "P-value region"), alpha = 0.6) +
-  
-  geom_vline(xintercept = x_bar, color = "blue", linewidth = 0.8) +
-  
-  scale_fill_manual(name = NULL, values = c("P-value region" = "red")) +
-  theme_classic() +
-  labs(title = "2. Sampling distribution (Means of n=30)",
-       subtitle = "Narrow variance (SEM = 2.74). A group average of 118.5 is rare.",
-       y = "Density", x = "IQ score") +
-  coord_cartesian(xlim = common_xlim)
+pop2_name <- "Personal income"
+pop2_unit <- "€"
+pop2_mu <- pop2_stat[["MEI_E"]]
+pop2_median <- pop2_stat[["MED_E"]]
+pop2 <- rlnorm(N, log(pop2_median), sqrt(2 * log(pop2_mu / pop2_median))) |> enframe()
+pop2_p <- pop2 |>
+  ggplot(aes(x = value)) +
+  geom_density() +
+  scale_x_continuous(name = str_glue("{pop2_name} / {pop2_unit}")) + 
+  scale_y_continuous(labels = scales::label_number())
 
-# Combine plots
-p1 / p2
+pop1_p
+
+# pop1_p + pop2_p + plot_annotation(tag_levels = "a")
+
 ```
 
-### 2. The calculation
+We see in the @fig-heigh-and-income that the density is heighst
 
-The Z-test quantifies the visual difference above. It calculates the distance between the observed mean and the expected mean in units of **Standard Error**.
+```{r}
 
-**Step A: Calculate standard error (SEM)**
+pop1_p +
+  geom_function(
+    fun = \(x) dnorm(x = x, mean = pop1_mu, sd = pop1_sigma),
+    mapping = aes(linetype = "Nomral distribution"),
+    color = "red"
+  ) +
+  labs(linetype = NULL)
 
-The spread of the sampling distribution (Plot 2) is determined by the population $\sigma$ and sample size $n$.
-
-\$\$SEM = \\frac{\\sigma}{\\sqrt{n}} = \\frac{15}{\\sqrt{30}} \\approx 2.74\$\$
-
-**Step B: Calculate Z-score**
-
-We standardize the difference. This maps our specific experiment (IQ) onto the universal Standard normal distribution.
-
-\$\$Z = \\frac{\\bar{x} - \\mu}{SEM} = \\frac{118.5 - 110}{2.74} \\approx 3.10\$\$
+```
