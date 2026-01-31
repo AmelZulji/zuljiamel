@@ -1,0 +1,65 @@
+[
+  {
+    "objectID": "Blog/posts/quarto-web-embed/index.html",
+    "href": "Blog/posts/quarto-web-embed/index.html",
+    "title": "Integrating blogs and books into a quarto website",
+    "section": "",
+    "text": "Quarto makes it remarkably easy to create, manage, and deploy a wide range of publishing projects. With a single command, one can generate websites, blogs, and books. Even more powerful is Quarto’s ability to combine these individual projects into a single, coherent meta-project.\nIn this guide, I demonstrate how to build a personal website that seamlessly embeds both a standalone blog and a dedicated book."
+  },
+  {
+    "objectID": "Blog/posts/quarto-web-embed/index.html#creating-a-website",
+    "href": "Blog/posts/quarto-web-embed/index.html#creating-a-website",
+    "title": "Integrating blogs and books into a quarto website",
+    "section": "Creating a website",
+    "text": "Creating a website\nFirst, we initialize the main website project.\n\nquarto create project website myweb --quiet\n\nThis command generates the basic structure of a Quarto website.\n\n\nmyweb\n├── _quarto.yml\n├── about.qmd\n├── index.qmd\n└── styles.css\n\n\nOnce rendered, we have a clean, functional landing page.\n\nquarto render myweb\n\n\u001b[1m\u001b[34m\n[1/2] about.qmd\u001b[39m\u001b[22m\n\u001b[1m\u001b[34m\n[2/2] index.qmd\u001b[39m\u001b[22m\n\nOutput created: _site/index.html"
+  },
+  {
+    "objectID": "Blog/posts/quarto-web-embed/index.html#integrating-a-blog",
+    "href": "Blog/posts/quarto-web-embed/index.html#integrating-a-blog",
+    "title": "Integrating blogs and books into a quarto website",
+    "section": "Integrating a blog",
+    "text": "Integrating a blog\nNext, we add a blog within the website.\n\nquarto create project blog myweb/myblog myblog --quiet\n\nThe command generates the basic structure of a Quarto blog and the website has now structure as follows:\n\n\nmyweb\n├── _quarto.yml\n├── _site\n│   ├── about.html\n│   ├── index.html\n│   ├── search.json\n│   ├── site_libs\n│   │   ├── bootstrap\n│   │   ├── clipboard\n│   │   ├── quarto-html\n│   │   ├── quarto-nav\n│   │   └── quarto-search\n│   └── styles.css\n├── about.qmd\n├── index.qmd\n├── myblog\n│   ├── _quarto.yml\n│   ├── about.qmd\n│   ├── index.qmd\n│   ├── posts\n│   │   ├── _metadata.yml\n│   │   ├── post-with-code\n│   │   └── welcome\n│   ├── profile.jpg\n│   └── styles.css\n└── styles.css\n\n\nNow, we need to configure the main website to include the blog from sub directory. Since quarto blog itself is also a project of type website this configuration is pretty straight forward. We need to add 2 lines within myweb/_quarto.yml\nproject:\n  type: website\n\nwebsite:\n  title: \"myweb\"\n  navbar:\n    left:\n      - href: index.qmd\n        text: Home\n      - about.qmd\n1      - href: myblog/index.qmd\n2  site-url: https://your-website-url.example.com\n\nformat:\n  html:\n    theme:\n      - cosmo\n      - brand\n    css: styles.css\n    toc: true\n\n1\n\nThe link points to the blog’s listing page and exposes the blog through the main site’s navigation.\n\n2\n\nThis is for blogs RSS feed and the link should be adjusted. Read more here\n\n\nWith these changes in place, rendering the main website integrates the blog seamlessly. The blog now appears as part of the website navigation while remaining a fully functional Quarto blog with its own posts, listings, and feeds.\n\nquarto render myweb\n\n\u001b[1m\u001b[34m\n[1/6] about.qmd\u001b[39m\u001b[22m\n\u001b[1m\u001b[34m\n[2/6] index.qmd\u001b[39m\u001b[22m\n\u001b[1m\u001b[34m\n[3/6] myblog/about.qmd\u001b[39m\u001b[22m\n\u001b[1m\u001b[34m\n[4/6] myblog/index.qmd\u001b[39m\u001b[22m\n\u001b[1m\u001b[34m\n[5/6] myblog/posts/post-with-code/index.qmd\u001b[39m\u001b[22m\n\u001b[1m\u001b[34m\n[6/6] myblog/posts/welcome/index.qmd\u001b[39m\u001b[22m\n\nOutput created: _site/index.html"
+  },
+  {
+    "objectID": "Blog/posts/quarto-web-embed/index.html#integrating-a-book",
+    "href": "Blog/posts/quarto-web-embed/index.html#integrating-a-book",
+    "title": "Integrating blogs and books into a quarto website",
+    "section": "Integrating a book",
+    "text": "Integrating a book\nFinally we add book within the website\n\nquarto create project book myweb/notes notes --quiet\n\nThe website structure now looks like this:\n\nfs::dir_tree(\"myweb\", recurse = 2)\n\nmyweb\n├── _quarto.yml\n├── _site\n│   ├── about.html\n│   ├── index.html\n│   ├── listings.json\n│   ├── myblog\n│   │   ├── about.html\n│   │   ├── index.html\n│   │   ├── posts\n│   │   └── profile.jpg\n│   ├── search.json\n│   ├── site_libs\n│   │   ├── bootstrap\n│   │   ├── clipboard\n│   │   ├── quarto-html\n│   │   ├── quarto-listing\n│   │   ├── quarto-nav\n│   │   └── quarto-search\n│   └── styles.css\n├── about.qmd\n├── index.qmd\n├── myblog\n│   ├── _quarto.yml\n│   ├── about.qmd\n│   ├── index.qmd\n│   ├── posts\n│   │   ├── _metadata.yml\n│   │   ├── post-with-code\n│   │   └── welcome\n│   ├── profile.jpg\n│   └── styles.css\n├── notes\n│   ├── _quarto.yml\n│   ├── cover.png\n│   ├── index.qmd\n│   ├── intro.qmd\n│   ├── references.bib\n│   ├── references.qmd\n│   └── summary.qmd\n└── styles.css\n\n\nUnlike blogs, Quarto books are not websites; they have their own rendering logic, chapter structure, and output directory. As a result, additional configuration is required.\nproject:\n  type: website\n  \n1  pre-render: render_book.R\n\n2  render:\n    - \"*.qmd\"\n    - \"!notes/\"\n\n3  resources: \"notes/_book\".\n\nwebsite:\n  title: \"myweb\"\n  navbar:\n    left:\n      - href: index.qmd\n        text: Home\n      - about.qmd\n      - href: myblog/index.qmd\n4      - href: notes/_book/index.html\n        text: notes\n\n  site-url: https://your-website-url.example.com  \n\n\nformat:\n  html:\n    theme:\n      - cosmo\n      - brand\n    css: styles.css\n    toc: true\n\n1\n\nPre-render the book with a custom R script (the content of the script is shown bellow). Here is the reason why we need to prerender the book: when we run quarto render on the main website, Quarto attempts to render every .qmd it finds using the website’s global configuration. However, a book needs to be rendered using its own _quarto.yml to preserve its chapter structure and book-specific features.\n\n2\n\nRender all site files except the pre-rendered book folder. We exclude rendering book at this points because it is supposed to be prerendred within its own structure.\n\n3\n\nTreat the rendered book output as a static resource.\n\n4\n\nLink to the compiled HTML entry point for navigation.\n\n\nBellow is the r script that is used in the pre-rendering process.\n1var1 &lt;- Sys.getenv(\"QUARTO_PROJECT_RENDER_ALL\")\n\n2if (var1 == \"\") {.\n  quit().\n}\n\nquarto::quarto_render(input = \"book/\")\n\n1\n\nA variable specifying whether whole project is to be rendered or not. Read more here.\n\n2\n\nIf the varible is \"\" it means quarto requested rendering a single file. In that case pre-rendering of the book is stopped. This is supper immportant as it prevents rendering whole project even if rendering only a single file was requested. Without this, whenever you would type quarto render file.qmd it will render not only that file but rather everything.\n\n\nWith this configuration file, we render the website and we have fully functional website with embeded blog and fully functional book.\n\n\n\n\nrm -r myweb"
+  },
+  {
+    "objectID": "Blog/posts/quarto-web-embed/index.html#wrapper",
+    "href": "Blog/posts/quarto-web-embed/index.html#wrapper",
+    "title": "Integrating blogs and books into a quarto website",
+    "section": "Wrapper",
+    "text": "Wrapper\n#!/bin/bash\n\n# 1. Capture Arguments\nif [ \"$#\" -ne 4 ]; then\n    echo \"Usage: $0 &lt;target_dir&gt; &lt;web_name&gt; &lt;blog_name&gt; &lt;book_name&gt;\"\n    echo \"Example: $0 . 'My Professional Site' 'posts' 'guidebook'\"\n    exit 1\nfi\n\nTARGET_DIR=$1\nWEB_NAME=$2\nBLOG_NAME=$3\nBOOK_NAME=$4\n\necho \"--- Initializing Meta-Project: $WEB_NAME in $TARGET_DIR ---\"\n\n# Create the projects using [dir] [name], this avoids \"$TARGET_DIR/$BLOG_NAME\" as blog name in metadata\nquarto create project website \"$TARGET_DIR\" \"$WEB_NAME\" --quiet --no-prompt\nquarto create project blog \"$TARGET_DIR/$BLOG_NAME\" \"$BLOG_NAME\" --quiet --no-prompt\nquarto create project book \"$TARGET_DIR/$BOOK_NAME\" \"$BOOK_NAME\" --quiet --no-prompt\n\n# Create the render_book.R to prerender book\ncat &lt;&lt;EOF &gt; \"$TARGET_DIR/render_book.R\"\nvar1 &lt;- Sys.getenv(\"QUARTO_PROJECT_RENDER_ALL\")\n\nif (var1 == \"\") {\n    quit()\n}\n\n# Renders the book from its subdirectory relative to this script\nquarto::quarto_render(input = \"$BOOK_NAME/\")\nEOF\n\n# configure main _quarto.yml to include blog and book\ncat &lt;&lt;EOF &gt; \"$TARGET_DIR/_quarto.yml\"\nproject:\n  type: website\n  pre-render: render_book.R\n  render:\n    - \"*.qmd\"\n    - \"!$BOOK_NAME/\"\n\n  resources: \n    - \"$BOOK_NAME/_book\"\n\nwebsite:\n  title: \"$WEB_NAME\"\n  site-url: https://your-website-url.example.com\n  navbar:\n    left:\n      - href: index.qmd\n        text: Home\n      - about.qmd\n      - href: $BLOG_NAME/index.qmd\n        text: Blog\n      - href: $BOOK_NAME/_book/index.html\n        text: Book\n\nformat:\n  html:\n    theme: cosmo\n    css: styles.css\n    toc: true\nEOF\n\necho \"setup complete\""
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "About this site"
+  },
+  {
+    "objectID": "Blog/about.html",
+    "href": "Blog/about.html",
+    "title": "About",
+    "section": "",
+    "text": "About this blog"
+  },
+  {
+    "objectID": "Blog/index.html",
+    "href": "Blog/index.html",
+    "title": "Blog",
+    "section": "",
+    "text": "Integrating blogs and books into a quarto website\n\n\n\n\n\n\nR\n\n\n\n\n\n\n\n\n\nJan 30, 2026\n\n\nZulji, Amel\n\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Amel Zulji",
+    "section": "",
+    "text": "This is a Quarto website.\nTo learn more about Quarto websites visit https://quarto.org/docs/websites."
+  }
+]

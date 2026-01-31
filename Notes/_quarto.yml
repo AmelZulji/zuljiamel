@@ -1,0 +1,21 @@
+project:
+  type: book
+
+book:
+  title: "Notes"
+  author: "Norah Jones"
+  date: "1/31/2026"
+  chapters:
+    - index.qmd
+    - references.qmd
+
+bibliography: references.bib
+
+format:
+  html:
+    theme: cosmo
+  pdf:
+    documentclass: scrreprt
+
+
+

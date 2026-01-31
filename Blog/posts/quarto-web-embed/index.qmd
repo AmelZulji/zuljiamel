@@ -1,0 +1,252 @@
+---
+title: Integrating blogs and books into a quarto website
+author: Zulji, Amel
+date: '2026-01-30'
+categories: R
+engine: knitr
+---
+
+Quarto makes it remarkably easy to create, manage, and deploy a wide range of publishing projects. With a single command, one can generate websites, blogs, and books. Even more powerful is Quarto’s ability to combine these individual projects into a single, coherent meta-project.
+
+In this guide, I demonstrate how to build a personal website that seamlessly embeds both a standalone blog and a dedicated book.
+
+## Creating a website
+
+First, we initialize the main website project.
+
+```{bash}
+quarto create project website myweb --quiet
+```
+
+This command generates the basic structure of a Quarto website.
+
+```{r}
+#| echo: false
+fs::dir_tree("myweb", recurse = 2)
+```
+
+Once rendered, we have a clean, functional landing page.
+
+```{bash}
+quarto render myweb
+```
+
+<video width="100%" height="auto" autoplay loop muted playsinline>
+
+<source src="web.mp4" type="video/mp4">
+
+</video>
+
+## Integrating a blog
+
+Next, we add a blog within the website.
+
+```{bash}
+quarto create project blog myweb/myblog myblog --quiet
+```
+
+The command generates the basic structure of a Quarto blog and the website has now structure as follows:
+
+```{r}
+#| echo: false
+fs::dir_tree("myweb", recurse = 2)
+```
+
+Now, we need to configure the main website to include the blog from sub directory. Since quarto blog itself is also a project of type website this configuration is pretty straight forward. We need to add 2 lines within `myweb/_quarto.yml`
+
+``` yaml
+project:
+  type: website
+
+website:
+  title: "myweb"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - about.qmd
+      - href: myblog/index.qmd                    # <1>
+  site-url: https://your-website-url.example.com  # <2>
+
+format:
+  html:
+    theme:
+      - cosmo
+      - brand
+    css: styles.css
+    toc: true
+```
+
+1.  The link points to the blog’s listing page and exposes the blog through the main site’s navigation.
+
+2.  This is for blogs RSS feed and the link should be adjusted. Read more [here](https://quarto.org/docs/websites/website-blog.html#rss-feed)
+
+With these changes in place, rendering the main website integrates the blog seamlessly. The blog now appears as part of the website navigation while remaining a fully functional Quarto blog with its own posts, listings, and feeds.
+
+```{bash}
+quarto render myweb
+```
+
+<video width="100%" height="auto" autoplay loop muted playsinline>
+
+<source src="web_blog.mp4" type="video/mp4">
+
+</video>
+
+## Integrating a book
+
+Finally we add book within the website
+
+```{bash}
+quarto create project book myweb/notes notes --quiet
+```
+
+The website structure now looks like this:
+
+```{r}
+fs::dir_tree("myweb", recurse = 2)
+```
+
+Unlike blogs, Quarto books are **not** websites; they have their own rendering logic, chapter structure, and output directory. As a result, additional configuration is required.
+
+``` yaml
+project:
+  type: website
+  
+  pre-render: render_book.R # <1>
+
+  render:       # <2>
+    - "*.qmd"   # <2>
+    - "!notes/" # <2>
+
+  resources: "notes/_book". # <3>
+
+website:
+  title: "myweb"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - about.qmd
+      - href: myblog/index.qmd
+      - href: notes/_book/index.html # <4>
+        text: notes # <4>
+
+  site-url: https://your-website-url.example.com  
+
+
+format:
+  html:
+    theme:
+      - cosmo
+      - brand
+    css: styles.css
+    toc: true
+```
+
+1.  Pre-render the book with a custom R script (the content of the script is shown bellow). Here is the reason why we need to prerender the book: when we run `quarto render` on the main website, Quarto attempts to render every `.qmd` it finds using the website's global configuration. However, a book needs to be rendered using its own `_quarto.yml` to preserve its chapter structure and book-specific features.
+
+2.  Render all site files except the pre-rendered book folder. We exclude rendering book at this points because it is supposed to be prerendred within its own structure.
+
+3.  Treat the rendered book output as a static resource.
+
+4.  Link to the compiled HTML entry point for navigation.
+
+Bellow is the r script that is used in the pre-rendering process.
+
+``` yaml
+var1 <- Sys.getenv("QUARTO_PROJECT_RENDER_ALL") # <1>
+
+if (var1 == "") {. # <2>
+  quit().          # <2>
+}                  # <2>
+
+quarto::quarto_render(input = "book/")
+```
+
+1.  A variable specifying whether whole project is to be rendered or not. Read more [here](https://quarto.org/docs/projects/scripts.html#pre-and-post-render).
+
+2.  If the varible is `""` it means quarto requested rendering a single file. In that case pre-rendering of the book is stopped. This is supper immportant as it prevents rendering whole project even if rendering only a single file was requested. Without this, whenever you would type quarto render file.qmd it will render not only that file but rather everything.
+
+With this configuration file, we render the website and we have fully functional website with embeded blog and fully functional book.
+
+<video width="100%" height="auto" autoplay loop muted playsinline>
+
+<source src="web_blog_book.mp4" type="video/mp4">
+
+</video>
+
+```{bash}
+rm -r myweb
+```
+
+## Wrapper
+
+``` yaml
+#!/bin/bash
+
+# 1. Capture Arguments
+if [ "$#" -ne 4 ]; then
+    echo "Usage: $0 <target_dir> <web_name> <blog_name> <book_name>"
+    echo "Example: $0 . 'My Professional Site' 'posts' 'guidebook'"
+    exit 1
+fi
+
+TARGET_DIR=$1
+WEB_NAME=$2
+BLOG_NAME=$3
+BOOK_NAME=$4
+
+echo "--- Initializing Meta-Project: $WEB_NAME in $TARGET_DIR ---"
+
+# Create the projects using [dir] [name], this avoids "$TARGET_DIR/$BLOG_NAME" as blog name in metadata
+quarto create project website "$TARGET_DIR" "$WEB_NAME" --quiet --no-prompt
+quarto create project blog "$TARGET_DIR/$BLOG_NAME" "$BLOG_NAME" --quiet --no-prompt
+quarto create project book "$TARGET_DIR/$BOOK_NAME" "$BOOK_NAME" --quiet --no-prompt
+
+# Create the render_book.R to prerender book
+cat <<EOF > "$TARGET_DIR/render_book.R"
+var1 <- Sys.getenv("QUARTO_PROJECT_RENDER_ALL")
+
+if (var1 == "") {
+    quit()
+}
+
+# Renders the book from its subdirectory relative to this script
+quarto::quarto_render(input = "$BOOK_NAME/")
+EOF
+
+# configure main _quarto.yml to include blog and book
+cat <<EOF > "$TARGET_DIR/_quarto.yml"
+project:
+  type: website
+  pre-render: render_book.R
+  render:
+    - "*.qmd"
+    - "!$BOOK_NAME/"
+
+  resources: 
+    - "$BOOK_NAME/_book"
+
+website:
+  title: "$WEB_NAME"
+  site-url: https://your-website-url.example.com
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - about.qmd
+      - href: $BLOG_NAME/index.qmd
+        text: Blog
+      - href: $BOOK_NAME/_book/index.html
+        text: Book
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+EOF
+
+echo "setup complete"
+```

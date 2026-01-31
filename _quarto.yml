@@ -1,0 +1,28 @@
+project:
+  type: website
+  pre-render: render_book.R
+  render:
+    - "*.qmd"
+    - "!Notes/"
+
+  resources: 
+    - "Notes/_book"
+
+website:
+  title: "Amel Zulji"
+  # site-url: https://your-website-url.example.com
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - about.qmd
+      - href: Blog/index.qmd
+        text: Blog
+      - href: Notes/_book/index.html
+        text: Book
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
