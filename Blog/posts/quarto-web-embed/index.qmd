@@ -6,9 +6,9 @@ categories: R
 engine: knitr
 ---
 
-Quarto makes it remarkably easy to create, manage, and deploy a wide range of publishing projects. With a single command, one can generate websites, blogs, and books. Even more powerful is Quarto’s ability to combine these individual projects into a single, coherent meta-project.
+Quarto makes it remarkably easy to create, manage, and deploy a wide range of publishing projects. With a single line of code, one can generate websites, blogs, and books. Even more powerful is Quarto’s ability to combine these individual projects into a single, coherent meta-project.
 
-In this guide, I demonstrate how to build a personal website that seamlessly embeds both a standalone blog and a dedicated book.
+In this guide, I demonstrate how to build a personal website and embed a blog and/or a book in it.
 
 ## Creating a website
 
@@ -92,6 +92,17 @@ quarto render myweb
 <source src="web_blog.mp4" type="video/mp4">
 
 </video>
+
+::: callout-note
+In the blog directory:
+
+```{r}
+#| echo: false 
+fs::dir_tree("myweb/myblog", recurse = 2)
+```
+
+we only need index.qmd and posts directory. The rest can be safely deleted. However, I prefer to keep it since it allows the blog to be standalone project (i.e. one can just open the blog directory and treat it as separate quarto project
+:::
 
 ## Integrating a book
 
@@ -180,73 +191,12 @@ With this configuration file, we render the website and we have fully functional
 rm -r myweb
 ```
 
-## Wrapper
+## Conclusion
 
-``` yaml
-#!/bin/bash
+Bellow is the single script that does all of the steps above automatically.
 
-# 1. Capture Arguments
-if [ "$#" -ne 4 ]; then
-    echo "Usage: $0 <target_dir> <web_name> <blog_name> <book_name>"
-    echo "Example: $0 . 'My Professional Site' 'posts' 'guidebook'"
-    exit 1
-fi
-
-TARGET_DIR=$1
-WEB_NAME=$2
-BLOG_NAME=$3
-BOOK_NAME=$4
-
-echo "--- Initializing Meta-Project: $WEB_NAME in $TARGET_DIR ---"
-
-# Create the projects using [dir] [name], this avoids "$TARGET_DIR/$BLOG_NAME" as blog name in metadata
-quarto create project website "$TARGET_DIR" "$WEB_NAME" --quiet --no-prompt
-quarto create project blog "$TARGET_DIR/$BLOG_NAME" "$BLOG_NAME" --quiet --no-prompt
-quarto create project book "$TARGET_DIR/$BOOK_NAME" "$BOOK_NAME" --quiet --no-prompt
-
-# Create the render_book.R to prerender book
-cat <<EOF > "$TARGET_DIR/render_book.R"
-var1 <- Sys.getenv("QUARTO_PROJECT_RENDER_ALL")
-
-if (var1 == "") {
-    quit()
-}
-
-# Renders the book from its subdirectory relative to this script
-quarto::quarto_render(input = "$BOOK_NAME/")
-EOF
-
-# configure main _quarto.yml to include blog and book
-cat <<EOF > "$TARGET_DIR/_quarto.yml"
-project:
-  type: website
-  pre-render: render_book.R
-  render:
-    - "*.qmd"
-    - "!$BOOK_NAME/"
-
-  resources: 
-    - "$BOOK_NAME/_book"
-
-website:
-  title: "$WEB_NAME"
-  site-url: https://your-website-url.example.com
-  navbar:
-    left:
-      - href: index.qmd
-        text: Home
-      - about.qmd
-      - href: $BLOG_NAME/index.qmd
-        text: Blog
-      - href: $BOOK_NAME/_book/index.html
-        text: Book
-
-format:
-  html:
-    theme: cosmo
-    css: styles.css
-    toc: true
-EOF
-
-echo "setup complete"
+``` bash
+{{< include _wraper.sh >}}
 ```
+
+What I really like about this setup is that each project is independent, but they are nicely integrated in a single website.
