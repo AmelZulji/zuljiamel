@@ -2,4 +2,4 @@
 title: "About"
 ---
 
-About this site
+Introduce yourself and your work
