@@ -1,1 +1,1 @@
-# zuljiamel
+Molecular and computational biologist working across experimental genomics and bioinformatics. I generate single-cell multiomics and spatial transcriptomics data from human tissue. I analyze the data with R and Python workflows orchestrated in containerized Snakemake pipelines. I interpret the results to gain insights into cellular states, tissue organization, and disease associated processes.
